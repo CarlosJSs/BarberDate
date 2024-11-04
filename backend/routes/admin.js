@@ -1,7 +1,9 @@
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import FBadmin from 'firebase-admin'
-import serviceAccount from '../config/firebaseServiceAccount.json' assert { type: 'json' }
+import fs from 'fs'
+const serviceAccount = JSON.parse(fs.readFileSync('./config/firebaseServiceAccount.json', 'utf-8'))
+//import serviceAccount from '../config/firebaseServiceAccount.json' assert { type: 'json' }
 import { verifyToken, generateToken } from './auth.js'
 
 // Inicializar firebase
