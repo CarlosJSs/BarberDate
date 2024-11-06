@@ -1,28 +1,29 @@
 <template>
-  <!-- Card principal con estilo oscuro tipo barbería -->
-  <v-card color="#1E1E1E" width="400" class="elevation-12">
+  <!-- Card principal con estilo oscuro tipo barbería, bordes redondeados -->
+  <v-card color="#1E1E1E" width="400" class="elevation-12 rounded-barber">
     <!-- Título de la tarjeta en azul oscuro, con estilo centralizado y texto en blanco -->
-    <v-card-title class="text-h4" style="background-color: #003366;">
+    <v-card-title class="text-h4 barber-title" style="background-color: #003366;">
       <p class="text-center" style="width: 100%; color: #FFF;">
         BarberDate
       </p>
     </v-card-title>
     <v-card-text>
       <v-row>
-        <!-- Campo de texto para el nombre de usuario, con ícono de usuario y borde azul oscuro -->
+        <!-- Campo de texto para el nombre de usuario, ícono solo aparece si el campo está vacío -->
         <v-text-field
           v-model="usuario"
-          label="Username"
+          label="User"
           filled
           rounded
           dense
           color="blue darken-3"
-          prepend-inner-icon="mdi-account"
+          :prepend-inner-icon="!usuario ? 'mdi-account' : ''"
           outlined
+          class="centered-label"
         />
       </v-row>
       <v-row>
-        <!-- Campo de texto para la contraseña, con ícono de candado y borde rojo oscuro -->
+        <!-- Campo de texto para la contraseña, ícono solo aparece si el campo está vacío -->
         <v-text-field
           v-model="password"
           label="Password"
@@ -30,9 +31,10 @@
           rounded
           dense
           color="red darken-3"
-          prepend-inner-icon="mdi-lock"
+          :prepend-inner-icon="!password ? 'mdi-lock' : ''"
           outlined
           type="password"
+          class="centered-label"
         />
         <!--  :rules="[emptyField, specialChars, sizePassword]"  -->
       </v-row>
@@ -95,4 +97,24 @@ export default {
 </script>
 
 <style>
+/* Borde redondeado personalizado para el v-card */
+.rounded-barber {
+  border-radius: 20px;
+}
+
+/* Tipografía para el título */
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+.barber-title {
+  font-family: 'Lobster', cursive;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+/* Centrado del label */
+.centered-label .v-label {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  color: #FFF; /* Cambia el color si necesitas */
+}
 </style>
