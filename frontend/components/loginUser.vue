@@ -23,9 +23,10 @@
         />
       </v-row>
       <v-row>
-        <!-- Campo de texto para la contraseña, ícono solo aparece si el campo está vacío -->
+        <!-- Campo de texto para la contraseña, ícono de ojo para mostrar/ocultar -->
         <v-text-field
           v-model="password"
+          :type="showPassword ? 'text' : 'password'"
           label="Password"
           filled
           rounded
@@ -33,10 +34,15 @@
           color="red darken-3"
           :prepend-inner-icon="!password ? 'mdi-lock' : ''"
           outlined
-          type="password"
           class="centered-label"
-        />
-        <!--  :rules="[emptyField, specialChars, sizePassword]"  -->
+        >
+          <!-- Ícono de ojo que permite mostrar/ocultar el texto de la contraseña -->
+          <template #append>
+            <v-icon @click="togglePasswordVisibility">
+              {{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}
+            </v-icon>
+          </template>
+        </v-text-field>
       </v-row>
     </v-card-text>
     <v-card-actions>
@@ -61,13 +67,8 @@ export default {
   data () {
     return {
       usuario: '',
-      password: '' /*,
-      emptyField:
-        value => !!value || 'No puede estar vacio',
-      specialChars:
-        value => (value && /^[A-Za-z0-9]/.test(value)) || 'Minimo un cracter especial',
-      sizePassword:
-        value => (value && value.length > 6) || 'Minimo 6 caracteres' */
+      password: '',
+      showPassword: false // Control para mostrar u ocultar la contraseña
     }
   },
   methods: {
@@ -91,6 +92,9 @@ export default {
           // eslint-disable-next-line no-console
           console.error('@@ error => ', error)
         })
+    },
+    togglePasswordVisibility () {
+      this.showPassword = !this.showPassword
     }
   }
 }
