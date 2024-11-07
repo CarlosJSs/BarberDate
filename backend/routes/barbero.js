@@ -127,8 +127,79 @@ router.post ('/create', async (req, res) => {
   })
 })
 
-// Actualizar info del barbero
+// Actualizar info del barbero por ID
 //    /api/barber/id
-//router.put()
+router.put('/:id', async(req, res) => {
+	try{
+		const barberID = req.params.id
+		const updateBarber = req.body
+
+		const myBarber = await barberCollection.doc(barberID).get()
+		if(!myBarber.exists){
+			return res.status(401).json({
+				message: 'error, el barbero no se encuentra'
+			})
+		}
+
+		await barberCollection.doc(barberID).set(updateBarber, {
+			merge: true
+		})
+
+		res.status(200).json({
+			message: 'success',
+			id: barberID,
+			...updateBarber
+		})
+
+	}catch(error){
+		res.status(400).json({
+			error: 'No se puede actualizar el barbero mediante el ID' + error
+		})
+	}
+})
+
+// Obtener un barbero por su ID
+router.get('/:id', async(req, res) => {
+	const id = req.params.id
+
+	//Indicamos el documento que queremos
+	const collBarber = await barberCollection.doc(id).get()
+	if(!collBarber.exists){
+		return res.status(401).json({
+			message: 'error, el barbero no se encuentra'
+		})
+	}
+	res.status(201).json({
+		message: 'succes',
+		barbero: {
+			id: collBarber.id,
+			...collBarber.data()
+		}
+	})
+})
+
+// Eliminar un barbero
+router.delete('/:id',  async(req, res) => {
+	try{
+		const barberID = req.params.id
+
+		const myBarber = await barberCollection.doc(barberID).get()
+		if(!myBarber.exists){
+			return res.status(401).json({
+				message: 'error, el barbero no se encuentra'
+			})
+		}
+
+		await barberCollection.doc(barberID).delete()
+		res.status(200).json({
+			message: 'El barbero fue borrado con exito'
+		})
+	}catch(error){
+		res.status(400).json({
+			error: "No se puede borrar el barbero mediante ID"
+		})
+	}
+})
+
 
 export default router

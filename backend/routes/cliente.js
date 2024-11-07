@@ -121,4 +121,78 @@ router.post ('/create', async (req, res) => {
   })
 })
 
+// Actualizar info del cliente por ID
+//    /api/cliente/id
+router.put('/:id', async(req, res) => {
+	try{
+		const clienteID = req.params.id
+		const updateCliente = req.body
+
+		const myCliente = await clienteCollection.doc(clienteID).get()
+		if(!myCliente.exists){
+			return res.status(401).json({
+				message: 'error, el cliente no se encuentra'
+			})
+		}
+
+		await clienteCollection.doc(clienteID).set(updateCliente, {
+			merge: true
+		})
+
+		res.status(200).json({
+			message: 'success',
+			id: clienteID,
+			...updateCliente
+		})
+
+	}catch(error){
+		res.status(400).json({
+			error: 'No se puede actualizar el cliente mediante el ID' + error
+		})
+	}
+})
+
+// Obtener un cliente por su ID
+router.get('/:id', async(req, res) => {
+	const id = req.params.id
+
+	//Indicamos el documento que queremos
+	const collCliente = await clienteCollection.doc(id).get()
+	if(!collCliente.exists){
+		return res.status(401).json({
+			message: 'error, el cliente no se encuentra'
+		})
+	}
+	res.status(201).json({
+		message: 'succes',
+		cliente: {
+			id: collCliente.id,
+			...collCliente.data()
+		}
+	})
+})
+
+// Eliminar un cliente
+router.delete('/:id',  async(req, res) => {
+	try{
+		const clienteID = req.params.id
+
+		const myCliente = await clienteCollection.doc(clienteID).get()
+		if(!myCliente.exists){
+			return res.status(401).json({
+				message: 'error, el cliente no se encuentra'
+			})
+		}
+
+		await clienteCollection.doc(clienteID).delete()
+		res.status(200).json({
+			message: 'El cliente fue borrado con exito'
+		})
+	}catch(error){
+		res.status(400).json({
+			error: "No se puede borrar el cliente mediante ID"
+		})
+	}
+})
+
 export default router
