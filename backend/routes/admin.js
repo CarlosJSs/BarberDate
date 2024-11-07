@@ -74,7 +74,7 @@ router.post('/login', async (req, res) => {
 
 // Obtener todos los admins
 //    /api/admin/all
-router.get('/all', authenticateToken, async(req, res) => {
+router.get('/all', async(req, res) => {
   const collAdmin = await adminCollection.get()
   const admin = collAdmin.docs.map((doc) => ({
     id: doc.id,
@@ -89,13 +89,14 @@ router.get('/all', authenticateToken, async(req, res) => {
 
 // Crear un admin
 //    /api/admin/create
-router.post ('/create', authenticateToken, async (req, res) => {
+router.post ('/create', async (req, res) => {
 
   // Definir el cuerpo de la info
   const {
     nombre,
     usuario,
-    password
+    password,
+    rol
   } = req.body
 
   // Validar usuario
@@ -114,7 +115,8 @@ router.post ('/create', authenticateToken, async (req, res) => {
   await adminCollection.add({
     nombre,
     usuario,
-    password: passHashed
+    password: passHashed,
+    rol
   })
 
   // Mandar el mensaje de resultado OK
