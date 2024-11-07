@@ -5,7 +5,7 @@ import adminRoutes from './routes/admin.js'
 
 // Iniciar el servidor
 const app = express()
-
+//HOLA PROFE
 // Configuracion del cors
 //    para que el server acepte peticiones entramtes
 const corsOptions = {
