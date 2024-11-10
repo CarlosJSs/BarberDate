@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>estas en el dashboard de los admins</h2>
+    <h2>Estas en el CRUD de admins</h2>
   </div>
 </template>
 

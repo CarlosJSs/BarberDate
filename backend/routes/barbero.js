@@ -1,15 +1,7 @@
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import FBadmin from 'firebase-admin'
-//import fs from 'fs'
-//const serviceAccount = JSON.parse(fs.readFileSync('./config/firebaseServiceAccount.json', 'utf-8'))
-//import serviceAccount from '../config/firebaseServiceAccount.json' assert { type: 'json' }
 import { verifyToken, generateToken } from './auth.js'
-
-// Inicializar firebase
-//FBadmin.initializeApp({
-//  credential: FBadmin.credential.cert(serviceAccount)
-//})
 
 // Acceder al realizar peticiones
 const router = express.Router()
@@ -40,39 +32,7 @@ function authenticateToken(req, res, next){
 
 // ------------- ENDPOINTS del BARBERO ------------------
 
-// Login Barbero
-router.post('/login', async (req, res) => {
-  const { usuario, password } = req.body
-  const findUser = await barberCollection.where('usuario', '==', usuario).get()
-
-  if(findUser.empty){
-    return res.status(400).json({
-      error: 'El usuario No Existe'
-    })
-  }
-
-  const barberDoc = findUser.docs[0]
-  const barber = barberDoc.data()
-
-  const validaPassword = await bcrypt.compare(password, barber.password)
-
-  if(!validaPassword){
-    return res.status(400).json({
-      error: 'Contraseña invalida'
-    })
-  }
-
-  const token = generateToken({
-    id: barberDoc.id,
-    usuario: barber.usuario
-  })
-
-  res.status(201).json({
-    token
-  })
-})
-
-// Obtener todos los admins
+// Obtener todos los barberos
 //    /api/barber/all
 router.get('/all', async(req, res) => {
   const collBarber = await barberCollection.get()
@@ -112,7 +72,7 @@ router.post ('/create', async (req, res) => {
   // Encriptar contraseña
   const passHashed = await bcrypt.hash(password, 10)
 
-  // Agregar el nuevo admin
+  // Agregar el nuevo barbero
   await barberCollection.add({
     nombre,
     correo,

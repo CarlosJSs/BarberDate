@@ -48,8 +48,18 @@ export default {
       items: [
         {
           icon: 'mdi-account',
-          title: 'Admin',
+          title: 'Dashboard',
           to: '/admin'
+        },
+        {
+          icon: 'mdi-account',
+          title: 'Barberos',
+          to: '/admin/barberos'
+        },
+        {
+          icon: 'mdi-account',
+          title: 'Admins',
+          to: '/admin/admins'
         },
         {
           icon: 'mdi-logout',

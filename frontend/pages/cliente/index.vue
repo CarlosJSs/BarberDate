@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h2>estas en el dashboard de los admins</h2>
+    <h2>Estas en el dashboard de los Clientes</h2>
   </div>
 </template>
 
-<script>
+<script setup>
 </script>
 
 <style>

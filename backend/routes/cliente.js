@@ -32,38 +32,6 @@ function authenticateToken(req, res, next){
 
 // ------------- ENDPOINTS del BARBERO ------------------
 
-// Login Cliente
-router.post('/login', async (req, res) => {
-  const { usuario, password } = req.body
-  const findUser = await clienteCollection.where('usuario', '==', usuario).get()
-
-  if(findUser.empty){
-    return res.status(400).json({
-      error: 'El usuario No Existe'
-    })
-  }
-
-  const clienteDoc = findUser.docs[0]
-  const cliente = clienteDoc.data()
-
-  const validaPassword = await bcrypt.compare(password, cliente.password)
-
-  if(!validaPassword){
-    return res.status(400).json({
-      error: 'Contraseña invalida'
-    })
-  }
-
-  const token = generateToken({
-    id: clienteDoc.id,
-    usuario: cliente.usuario
-  })
-
-  res.status(201).json({
-    token
-  })
-})
-
 // Obtener todos los clientes
 //    /api/cliente/all
 router.get('/all', async(req, res) => {

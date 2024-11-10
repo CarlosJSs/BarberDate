@@ -79,18 +79,30 @@ export default {
       }
 
       // Peticion axios para el login
-      this.$axios.post('/login', body)
+      this.$axios.post('auth/login', body)
         .then((res) => {
           if (res.data && res.data.token) {
             // Guardar el token en las cookies, expira en un día y es accesible desde toda la raíz
             Cookies.set('token', res.data.token, { expires: 1, path: '/' })
             // Redirigir a la página de administración después de iniciar sesión
-            this.$router.push('/admin')
+
+            const role = res.data.role
+            if (role === 'admin') {
+              this.$router.push('/admin')
+            } else if (role === 'barber') {
+              this.$router.push('/barbero')
+            } else if (role === 'cliente') {
+              this.$router.push('/cliente')
+            } else {
+              // eslint-disable-next-line no-console
+              console.error('Rol desconocido: ', role)
+            }
           }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.error('@@ error => ', error)
+          this.errorMessage = error.response?.data?.error || 'Error al iniciar sesion'
         })
     },
     togglePasswordVisibility () {
