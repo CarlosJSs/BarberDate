@@ -1,15 +1,7 @@
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import FBadmin from 'firebase-admin'
-import fs from 'fs'
-const serviceAccount = JSON.parse(fs.readFileSync('./config/firebaseServiceAccount.json', 'utf-8'))
-//import serviceAccount from '../config/firebaseServiceAccount.json' assert { type: 'json' }
 import { verifyToken, generateToken } from './auth.js'
-
-// Inicializar firebase
-FBadmin.initializeApp({
-  credential: FBadmin.credential.cert(serviceAccount)
-})
 
 // Acceder al realizar peticiones
 const router = express.Router()
@@ -17,6 +9,7 @@ const router = express.Router()
 // Obtener la DB
 const db = FBadmin.firestore()
 const adminCollection = db.collection('admin')
+const barberCollection = db.collection('barbero')
 
 // Middleware
 function authenticateToken(req, res, next){
@@ -40,38 +33,7 @@ function authenticateToken(req, res, next){
 
 // ------------- ENDPOINTS del ADMIN ------------------
 
-// Login Admin
-router.post('/login', async (req, res) => {
-  const { usuario, password } = req.body
-  const findUser = await adminCollection.where('usuario', '==', usuario).get()
-
-  if(findUser.empty){
-    return res.status(400).json({
-      error: 'El usuario No Existe'
-    })
-  }
-
-  const adminDoc = findUser.docs[0]
-  const admin = adminDoc.data()
-
-  const validaPassword = await bcrypt.compare(password, admin.password)
-
-  if(!validaPassword){
-    return res.status(400).json({
-      error: 'Contraseña invalida'
-    })
-  }
-
-  const token = generateToken({
-    id: adminDoc.id,
-    usuario: admin.usuario
-  })
-
-  res.status(201).json({
-    token
-  })
-})
-
+//----------------- Acciones sobre los admins ------------------
 // Obtener todos los admins
 //    /api/admin/all
 router.get('/all', async(req, res) => {
