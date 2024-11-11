@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h2>Estas en el dashboard de los Clientes</h2>
+    <h2>Estas en el perfil del barbero</h2>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'IndexPageCliente',
-  layout: 'clienteLayout',
+  name: 'PerfilPageBarbero',
+  layout: 'barberoLayout',
   middleware: 'detect-push'
 }
 </script>

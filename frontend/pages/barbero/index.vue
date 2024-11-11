@@ -5,6 +5,11 @@
 </template>
 
 <script>
+export default {
+  name: 'IndexPageBarbero',
+  layout: 'barberoLayout',
+  middleware: 'detect-push'
+}
 </script>
 
 <style>

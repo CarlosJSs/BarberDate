@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h2>Estas en el dashboard de los Clientes</h2>
+    <h2>Estas en las citas del cliente</h2>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'IndexPageCliente',
+  name: 'CitasPageCliente',
   layout: 'clienteLayout',
   middleware: 'detect-push'
 }
