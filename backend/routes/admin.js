@@ -9,7 +9,6 @@ const router = express.Router()
 // Obtener la DB
 const db = FBadmin.firestore()
 const adminCollection = db.collection('admin')
-const barberCollection = db.collection('barbero')
 
 // Middleware
 function authenticateToken(req, res, next){
@@ -36,7 +35,7 @@ function authenticateToken(req, res, next){
 //----------------- Acciones sobre los admins ------------------
 // Obtener todos los admins
 //    /api/admin/all
-router.get('/all', async(req, res) => {
+router.get('/all', authenticateToken, async(req, res) => {
   const collAdmin = await adminCollection.get()
   const admin = collAdmin.docs.map((doc) => ({
     id: doc.id,
@@ -51,7 +50,7 @@ router.get('/all', async(req, res) => {
 
 // Crear un admin
 //    /api/admin/create
-router.post ('/create', async (req, res) => {
+router.post ('/create', authenticateToken, async (req, res) => {
 
   // Definir el cuerpo de la info
   const {
@@ -85,6 +84,30 @@ router.post ('/create', async (req, res) => {
   res.status(201).json({
     message: 'success'
   })
+})
+
+// Eliminar un Admin
+//  /api/admin/id
+router.delete('/:id', authenticateToken, async(req, res) => {
+	try{
+		const adminID = req.params.id
+
+		const myAdmin = await adminCollection.doc(adminID).get()
+		if(!myAdmin.exists){
+			return res.status(401).json({
+				message: 'error, el admin no se encuentra'
+			})
+		}
+
+		await adminCollection.doc(adminID).delete()
+		res.status(200).json({
+			message: 'El admin fue borrado con exito'
+		})
+	}catch(error){
+		res.status(400).json({
+			error: "No se puede borrar el admin mediante ID"
+		})
+	}
 })
 
 export default router

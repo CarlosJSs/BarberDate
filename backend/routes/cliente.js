@@ -34,7 +34,7 @@ function authenticateToken(req, res, next){
 
 // Obtener todos los clientes
 //    /api/cliente/all
-router.get('/all', async(req, res) => {
+router.get('/all', authenticateToken, async(req, res) => {
   const collCliente = await clienteCollection.get()
   const cliente = collCliente.docs.map((doc) => ({
     id: doc.id,
@@ -49,7 +49,7 @@ router.get('/all', async(req, res) => {
 
 // Crear un cliente
 //    /api/cliente/create
-router.post ('/create', async (req, res) => {
+router.post ('/create', authenticateToken, async (req, res) => {
 
   // Definir el cuerpo de la info
   const {
@@ -91,7 +91,7 @@ router.post ('/create', async (req, res) => {
 
 // Actualizar info del cliente por ID
 //    /api/cliente/id
-router.put('/:id', async(req, res) => {
+router.put('/:id', authenticateToken, async(req, res) => {
 	try{
 		const clienteID = req.params.id
 		const updateCliente = req.body
@@ -121,7 +121,7 @@ router.put('/:id', async(req, res) => {
 })
 
 // Obtener un cliente por su ID
-router.get('/:id', async(req, res) => {
+router.get('/:id', authenticateToken, async(req, res) => {
 	const id = req.params.id
 
 	//Indicamos el documento que queremos
@@ -141,7 +141,7 @@ router.get('/:id', async(req, res) => {
 })
 
 // Eliminar un cliente
-router.delete('/:id',  async(req, res) => {
+router.delete('/:id', authenticateToken, async(req, res) => {
 	try{
 		const clienteID = req.params.id
 
