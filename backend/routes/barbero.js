@@ -34,7 +34,7 @@ function authenticateToken(req, res, next){
 
 // Obtener todos los barberos
 //    /api/barber/all
-router.get('/all', async(req, res) => {
+router.get('/all', authenticateToken, async(req, res) => {
   const collBarber = await barberCollection.get()
   const barber = collBarber.docs.map((doc) => ({
     id: doc.id,
@@ -49,7 +49,7 @@ router.get('/all', async(req, res) => {
 
 // Crear un barbero
 //    /api/barber/create
-router.post ('/create', async (req, res) => {
+router.post ('/create', authenticateToken, async (req, res) => {
 
   // Definir el cuerpo de la info
   const {
@@ -89,7 +89,7 @@ router.post ('/create', async (req, res) => {
 
 // Actualizar info del barbero por ID
 //    /api/barber/id
-router.put('/:id', async(req, res) => {
+router.put('/:id', authenticateToken, async(req, res) => {
 	try{
 		const barberID = req.params.id
 		const updateBarber = req.body
@@ -119,7 +119,7 @@ router.put('/:id', async(req, res) => {
 })
 
 // Obtener un barbero por su ID
-router.get('/:id', async(req, res) => {
+router.get('/:id', authenticateToken, async(req, res) => {
 	const id = req.params.id
 
 	//Indicamos el documento que queremos
@@ -139,7 +139,7 @@ router.get('/:id', async(req, res) => {
 })
 
 // Eliminar un barbero
-router.delete('/:id',  async(req, res) => {
+router.delete('/:id', authenticateToken, async(req, res) => {
 	try{
 		const barberID = req.params.id
 
@@ -160,6 +160,5 @@ router.delete('/:id',  async(req, res) => {
 		})
 	}
 })
-
 
 export default router

@@ -43,17 +43,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(barbero, index) in barberos" :key="index">
-            <td><img v-if="barbero.imagen" :src="barbero.imagen" class="table-image"></td>
+          <tr v-for="(myBarber, index) in barberos" :key="index">
+            <td><img v-if="myBarber.imagen" :src="myBarber.imagen" class="table-image"></td>
             <td v-show="false">
-              {{ barbero.id }}
+              {{ myBarber.id }}
             </td>
-            <td>{{ barbero.nombre }}</td>
-            <td>{{ barbero.correo }}</td>
-            <td>{{ barbero.usuario }}</td>
+            <td>{{ myBarber.nombre }}</td>
+            <td>{{ myBarber.correo }}</td>
+            <td>{{ myBarber.usuario }}</td>
             <td>
-              <button class="delete-button" @click="deleteBarbero(barbero.id)">
-                Borrar
+              <button class="delete-button" @click="deleteBarbero(myBarber.id)">
+                Eliminar
               </button>
             </td>
           </tr>
