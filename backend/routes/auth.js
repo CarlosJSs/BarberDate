@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
       findUser = await barberCollection.where('usuario', '==', usuario).get()
       if(!findUser.empty){
         user = findUser.docs[0].data()
-        role = 'barber'
+        role = 'barbero'
       }
     }
 
