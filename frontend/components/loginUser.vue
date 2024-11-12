@@ -84,12 +84,14 @@ export default {
           if (res.data && res.data.token) {
             // Guardar el token en las cookies, expira en un día y es accesible desde toda la raíz
             Cookies.set('token', res.data.token, { expires: 1, path: '/' })
-            // Redirigir a la página de administración después de iniciar sesión
+            // Guardamos el rol
+            Cookies.set('role', res.data.role, { expires: 1, path: '/' })
 
+            // Redirigir a la página de administración después de iniciar sesión
             const role = res.data.role
             if (role === 'admin') {
               this.$router.push('/admin')
-            } else if (role === 'barber') {
+            } else if (role === 'barbero') {
               this.$router.push('/barbero')
             } else if (role === 'cliente') {
               this.$router.push('/cliente')

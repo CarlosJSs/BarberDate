@@ -67,7 +67,11 @@
 import Cookies from 'js-cookie'
 
 export default {
-  middleware: 'detect-push',
+  layout: 'adminLayout',
+  middleware: [
+    'detect-push',
+    'auth-role'
+  ],
   data () {
     return {
       barbero: {

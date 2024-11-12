@@ -5,6 +5,9 @@ export default function ({ route, redirect }) {
     if (Cookies.get('token')) {
       Cookies.remove('token')
     }
+    if (Cookies.get('role')) {
+      Cookies.remove('role')
+    }
   }
 
   // eslint-disable-next-line no-console
