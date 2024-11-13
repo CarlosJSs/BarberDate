@@ -2,9 +2,9 @@
   <!-- Card principal con estilo oscuro tipo barbería, bordes redondeados y mayor tamaño -->
   <v-card color="#1E1E1E" width="600" class="elevation-12 rounded-barber">
     <v-row no-gutters>
-      <!-- Columna izquierda para el logo de la barbería -->
-      <v-col cols="5" class="d-flex align-center justify-center" style="background-color: #003366;">
-        <v-img src="path/to/logo.png" max-width="150" alt="Barbería Logo" />
+      <!-- Columna izquierda para el espacio del logo, cubre toda la altura del card -->
+      <v-col cols="5" class="logo-column d-flex align-center justify-center">
+        <v-img src="https://cdn.dribbble.com/users/13059329/screenshots/20395671/brucesbarbershop-logo.png" max-width="150" alt="Barbería Logo" contain />
       </v-col>
 
       <!-- Columna derecha con el formulario de login -->
@@ -108,11 +108,13 @@ export default {
             } else if (role === 'cliente') {
               this.$router.push('/cliente')
             } else {
+              // eslint-disable-next-line no-console
               console.error('Rol desconocido: ', role)
             }
           }
         })
         .catch((error) => {
+          // eslint-disable-next-line no-console
           console.error('@@ error => ', error)
           this.errorMessage = error.response?.data?.error || 'Error al iniciar sesion'
         })
@@ -127,6 +129,12 @@ export default {
 <style>
 .rounded-barber {
   border-radius: 20px;
+}
+
+/* Estilo de la columna del logo para cubrir toda la altura */
+.logo-column {
+  background-color: #003366;
+  min-height: 100%;
 }
 
 /* Tipografía para el título */
