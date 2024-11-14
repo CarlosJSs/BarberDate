@@ -1,63 +1,79 @@
 <template>
-  <!-- Card principal con estilo oscuro tipo barbería, bordes redondeados -->
-  <v-card color="#1E1E1E" width="400" class="elevation-12 rounded-barber">
-    <!-- Título de la tarjeta en azul oscuro, con estilo centralizado y texto en blanco -->
-    <v-card-title class="text-h4 barber-title" style="background-color: #003366;">
-      <p class="text-center" style="width: 100%; color: #FFF;">
-        BarberDate
-      </p>
-    </v-card-title>
-    <v-card-text>
-      <v-row>
-        <!-- Campo de texto para el nombre de usuario, ícono solo aparece si el campo está vacío -->
-        <v-text-field
-          v-model="usuario"
-          label="User"
-          filled
-          rounded
-          dense
-          color="blue darken-3"
-          :prepend-inner-icon="!usuario ? 'mdi-account' : ''"
-          outlined
-          class="centered-label"
-        />
-      </v-row>
-      <v-row>
-        <!-- Campo de texto para la contraseña, ícono de ojo para mostrar/ocultar -->
-        <v-text-field
-          v-model="password"
-          :type="showPassword ? 'text' : 'password'"
-          label="Password"
-          filled
-          rounded
-          dense
-          color="red darken-3"
-          :prepend-inner-icon="!password ? 'mdi-lock' : ''"
-          outlined
-          class="centered-label"
-        >
-          <!-- Ícono de ojo que permite mostrar/ocultar el texto de la contraseña -->
-          <template #append>
-            <v-icon @click="togglePasswordVisibility">
-              {{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}
-            </v-icon>
-          </template>
-        </v-text-field>
-      </v-row>
-    </v-card-text>
-    <v-card-actions>
-      <!-- Botón de login centrado, con color azul oscuro y texto blanco -->
-      <v-row align="center" justify="center" style="width: 100%;" class="mb-2 mt-2">
-        <v-btn color="blue darken-4" @click="loginBackend">
-          <span style="text-transform: none; color: white;">
-            Go
-          </span>
-          <v-icon color="white" right>
-            mdi-login
+  <!-- Card principal con estilo oscuro tipo barbería, bordes redondeados y mayor tamaño -->
+  <v-card color="#1E1E1E" width="600" class="elevation-12 rounded-barber">
+    <v-row no-gutters>
+      <!-- Columna izquierda para el espacio del logo, cubre toda la altura del card -->
+      <v-col cols="5" class="logo-column d-flex align-center justify-center">
+        <v-img src="https://cdn.dribbble.com/users/13059329/screenshots/20395671/brucesbarbershop-logo.png" max-width="150" alt="Barbería Logo" contain />
+      </v-col>
+
+      <!-- Columna derecha con el formulario de login -->
+      <v-col cols="7">
+        <!-- Título de la tarjeta con ícono de perfil en la parte superior -->
+        <v-card-title class="text-h4 barber-title" style="background-color: #003366; position: relative;">
+          <p class="text-center" style="width: 100%; color: #FFF;">
+            BarberDate
+          </p>
+          <!-- Ícono de perfil en la esquina superior derecha -->
+          <v-icon large color="white" style="position: absolute; top: 8px; right: 16px;">
+            mdi-account-circle
           </v-icon>
-        </v-btn>
-      </v-row>
-    </v-card-actions>
+        </v-card-title>
+
+        <v-card-text>
+          <v-row>
+            <!-- Campo de texto para el nombre de usuario -->
+            <v-text-field
+              v-model="usuario"
+              label="User"
+              filled
+              rounded
+              dense
+              color="blue darken-3"
+              :prepend-inner-icon="!usuario ? 'mdi-account' : ''"
+              outlined
+              class="centered-label"
+            />
+          </v-row>
+          <v-row>
+            <!-- Campo de texto para la contraseña -->
+            <v-text-field
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              label="Password"
+              filled
+              rounded
+              dense
+              color="red darken-3"
+              :prepend-inner-icon="!password ? 'mdi-lock' : ''"
+              outlined
+              class="centered-label"
+            >
+              <!-- Ícono de ojo para mostrar/ocultar la contraseña -->
+              <template #append>
+                <v-icon @click="togglePasswordVisibility">
+                  {{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}
+                </v-icon>
+              </template>
+            </v-text-field>
+          </v-row>
+        </v-card-text>
+
+        <v-card-actions>
+          <!-- Botón de login centrado -->
+          <v-row align="center" justify="center" style="width: 100%;" class="mb-2 mt-2">
+            <v-btn color="blue darken-4" @click="loginBackend">
+              <span style="text-transform: none; color: white;">
+                Go
+              </span>
+              <v-icon color="white" right>
+                mdi-login
+              </v-icon>
+            </v-btn>
+          </v-row>
+        </v-card-actions>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
@@ -82,12 +98,8 @@ export default {
       this.$axios.post('auth/login', body)
         .then((res) => {
           if (res.data && res.data.token) {
-            // Guardar el token en las cookies, expira en un día y es accesible desde toda la raíz
             Cookies.set('token', res.data.token, { expires: 1, path: '/' })
-            // Guardamos el rol
             Cookies.set('role', res.data.role, { expires: 1, path: '/' })
-
-            // Redirigir a la página de administración después de iniciar sesión
             const role = res.data.role
             if (role === 'admin') {
               this.$router.push('/admin')
@@ -115,9 +127,14 @@ export default {
 </script>
 
 <style>
-/* Borde redondeado personalizado para el v-card */
 .rounded-barber {
   border-radius: 20px;
+}
+
+/* Estilo de la columna del logo para cubrir toda la altura */
+.logo-column {
+  background-color: #003366;
+  min-height: 100%;
 }
 
 /* Tipografía para el título */
@@ -133,6 +150,6 @@ export default {
   display: flex;
   justify-content: center;
   width: 100%;
-  color: #FFF; /* Cambia el color si necesitas */
+  color: #FFF;
 }
 </style>
