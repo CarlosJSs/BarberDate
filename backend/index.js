@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.js'
 import adminRoutes from './routes/admin.js'
 import barberRoutes from './routes/barbero.js'
 import clienteRoutes from './routes/cliente.js'
+import citasRoutes from './routes/citas.js'
 
 // Iniciar el servidor
 const app = express()
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/barber', barberRoutes)
 app.use('/api/cliente', clienteRoutes)
+app.use('/api/citas', citasRoutes)
 
 // Definir el puerto de trabajo
 const PORT = process.env.PORT || 1906
