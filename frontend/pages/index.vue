@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" align="center">
+  <v-row justify="center" align="center" class="index-background">
     <loginUser />
   </v-row>
 </template>
@@ -13,9 +13,14 @@ export default {
     loginUser
   },
   layout: 'login',
-  middleware: 'detect-push',
-  mounted () {
-
-  }
+  middleware: 'detect-push'
 }
 </script>
+
+<style scoped>
+.index-background {
+  background-color: #464646;
+  width: 100vw;
+  height: 100vh;
+}
+</style>

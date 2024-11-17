@@ -1,15 +1,7 @@
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import FBadmin from 'firebase-admin'
-import fs from 'fs'
-const serviceAccount = JSON.parse(fs.readFileSync('./config/firebaseServiceAccount.json', 'utf-8'))
-//import serviceAccount from '../config/firebaseServiceAccount.json' assert { type: 'json' }
 import { verifyToken, generateToken } from './auth.js'
-
-// Inicializar firebase
-FBadmin.initializeApp({
-  credential: FBadmin.credential.cert(serviceAccount)
-})
 
 // Acceder al realizar peticiones
 const router = express.Router()
@@ -40,38 +32,7 @@ function authenticateToken(req, res, next){
 
 // ------------- ENDPOINTS del ADMIN ------------------
 
-// Login Admin
-router.post('/login', async (req, res) => {
-  const { usuario, password } = req.body
-  const findUser = await adminCollection.where('usuario', '==', usuario).get()
-
-  if(findUser.empty){
-    return res.status(400).json({
-      error: 'El usuario No Existe'
-    })
-  }
-
-  const adminDoc = findUser.docs[0]
-  const admin = adminDoc.data()
-
-  const validaPassword = await bcrypt.compare(password, admin.password)
-
-  if(!validaPassword){
-    return res.status(400).json({
-      error: 'Contraseña invalida'
-    })
-  }
-
-  const token = generateToken({
-    id: adminDoc.id,
-    usuario: admin.usuario
-  })
-
-  res.status(201).json({
-    token
-  })
-})
-
+//----------------- Acciones sobre los admins ------------------
 // Obtener todos los admins
 //    /api/admin/all
 router.get('/all', authenticateToken, async(req, res) => {
@@ -95,7 +56,8 @@ router.post ('/create', authenticateToken, async (req, res) => {
   const {
     nombre,
     usuario,
-    password
+    password,
+    rol
   } = req.body
 
   // Validar usuario
@@ -114,13 +76,38 @@ router.post ('/create', authenticateToken, async (req, res) => {
   await adminCollection.add({
     nombre,
     usuario,
-    password: passHashed
+    password: passHashed,
+    rol
   })
 
   // Mandar el mensaje de resultado OK
   res.status(201).json({
     message: 'success'
   })
+})
+
+// Eliminar un Admin
+//  /api/admin/id
+router.delete('/:id', authenticateToken, async(req, res) => {
+	try{
+		const adminID = req.params.id
+
+		const myAdmin = await adminCollection.doc(adminID).get()
+		if(!myAdmin.exists){
+			return res.status(401).json({
+				message: 'error, el admin no se encuentra'
+			})
+		}
+
+		await adminCollection.doc(adminID).delete()
+		res.status(200).json({
+			message: 'El admin fue borrado con exito'
+		})
+	}catch(error){
+		res.status(400).json({
+			error: "No se puede borrar el admin mediante ID"
+		})
+	}
 })
 
 export default router
