@@ -19,14 +19,14 @@
         <button class="tab-button completed" @click="setFilter('completed')">Citas Completadas</button>
         <button class="tab-button not-completed" @click="setFilter('not-completed')">Citas No Concretadas</button>
       </div>
-    
+
     <h2>BarberShop: Calendario de citas</h2>
     <div id="calendarHeader">
       <button @click="changeMonth(-1)">ANTERIOR</button>
       <span>{{ currentMonthName }} {{ currentYear }}</span>
       <button @click="changeMonth(1)">SIGUIENTE</button>
     </div>
-    
+
     <div id="calendarDays">
       <div v-for="day in daysOfWeek" :key="day" class="day">{{ day }}</div>
       <div v-for="n in firstDay" :key="'empty' + n" class="date"></div>
@@ -37,7 +37,7 @@
         :data-status="getCitaStatus(day)"
         @mouseenter="showAppointmentTooltip(day)"
         @mouseleave="hideAppointmentTooltip"
-      > 
+      >
     {{ day }}
     <div v-if="tooltipVisible && tooltipDay === day" class="tooltip">
       <div v-for="(cita, index) in tooltipCita" :key="index">
@@ -68,8 +68,8 @@ export default {
     return{
       currentMonth: new Date().getMonth(),
       currentYear: new Date().getFullYear(),
-      loggedUser:{name: "pedro", role: "barber"}, /*Acá simulamos las citas obtenidas de 
-      un empleado llamado pedro (Esto se reemplazará por los datos del login en backend)*/ 
+      loggedUser:{name: "pedro", role: "barber"}, /*Acá simulamos las citas obtenidas de
+      un empleado llamado pedro (Esto se reemplazará por los datos del login en backend)*/
       currentFilter: "all",
 
       citas:[
@@ -87,7 +87,7 @@ export default {
       tooltipCita: {}
     };
   },
-  
+
   computed: {
     currentMonthName(){
       const monthNames = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
@@ -101,7 +101,7 @@ export default {
     firstDay(){
       return new Date(this.currentYear, this.currentMonth, 1).getDay();
     },
-    
+
     filteredCitas(){
       return this.citas.filter(cita => {
         if(this.loggedUser.role === "barber" && cita.barber !== this.loggedUser.name) return false; //Filtrado de citas para un barbero (para clientes solo se cambia el "barber" por la etiqueta que tenga asignada el cliente)
@@ -137,13 +137,13 @@ export default {
       }
     },
     getCitaStatus(day){
-      const date = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; 
+      const date = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const citasDelDia = this.filteredCitas.filter(c => c.date === date);
-      
+
       if(citasDelDia.length > 1) return "multiple"; // Por si hay varias citas en un día
       return citasDelDia.length ? citasDelDia[0].status : null;
     },
-    
+
     showAppointmentTooltip(day){
       const date = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const citasDelDia = this.filteredCitas.filter(c => c.date === date);
@@ -153,7 +153,7 @@ export default {
         this.tooltipCita = citasDelDia; //almacenamos todas las citas del día
       }
     },
-  
+
     hideAppointmentTooltip(){
       this.tooltipVisible = false;
       this.tooltipDay = null;
@@ -165,7 +165,7 @@ export default {
              status === "upcoming" ? "Próxima" :
              "No concretada";
     }
-    
+
   }
 };
 

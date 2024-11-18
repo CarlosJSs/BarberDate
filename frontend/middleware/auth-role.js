@@ -13,8 +13,8 @@ export default function ({ route, redirect }) {
   // Definimos las rutas permitidas por cada rol
   const roleRoutes = {
     admin: ['/admin', '/admin/barberos', '/admin/admins'],
-    barbero: ['/barbero', '/barbero/citas', '/barbero/perfil'],
-    cliente: ['/cliente', '/cliente/citas', '/cliente/perfil']
+    barbero: ['/barbero', '/barbero/citas', '/barbero/perfil', '/barbero/solicitudes'],
+    cliente: ['/cliente', '/cliente/citas', '/cliente/perfil', '/cliente/contacto', '/cliente/barberos']
   }
 
   // Validamos si el rol actual tiene acceso a la ruta

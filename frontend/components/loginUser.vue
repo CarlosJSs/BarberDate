@@ -100,6 +100,7 @@ export default {
           if (res.data && res.data.token) {
             Cookies.set('token', res.data.token, { expires: 1, path: '/' })
             Cookies.set('role', res.data.role, { expires: 1, path: '/' })
+            Cookies.set('userID', res.data.userID, { expires: 1, path: '/' })
             const role = res.data.role
             if (role === 'admin') {
               this.$router.push('/admin')
