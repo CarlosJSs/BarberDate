@@ -56,8 +56,7 @@ router.post ('/create', authenticateToken, async (req, res) => {
   const {
     nombre,
     usuario,
-    password,
-    rol
+    password
   } = req.body
 
   // Validar usuario
@@ -77,7 +76,7 @@ router.post ('/create', authenticateToken, async (req, res) => {
     nombre,
     usuario,
     password: passHashed,
-    rol
+    rol: 'admin'
   })
 
   // Mandar el mensaje de resultado OK

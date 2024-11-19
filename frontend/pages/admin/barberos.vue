@@ -118,7 +118,7 @@ export default {
           correo: this.barbero.correo,
           usuario: this.barbero.usuario,
           password: this.barbero.contrasena,
-          rol: 'barbero'
+          horarios: []
         }
 
         // Peticion a axios

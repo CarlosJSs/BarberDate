@@ -5,7 +5,7 @@
       <h2>Gestionar tus citas</h2>
       <div class="form-group">
         <label>Nombre de la cita</label>
-        <input v-model="cita.nombre" type="text" placeholder="ej: primer sesion">
+        <input v-model="cita.nombre" type="text" placeholder="">
       </div>
       <div class="form-group">
         <v-select
@@ -27,7 +27,7 @@
           v-model="cita.hora"
           clearable
           label="Horario"
-          :items="['8:30', '9:00', '14:00', '16:00']"
+          :items="horariosBarbero"
           variant="outlined"
         />
       </div>
@@ -103,6 +103,10 @@ export default {
         map[barbero.id] = barbero.nombre
         return map
       }, {})
+    },
+    horariosBarbero () {
+      const barberSelected = this.barberos.find(barbero => barbero.id === this.cita.barberoID)
+      return barberSelected ? barberSelected.horarios : []
     }
   },
   mounted () {

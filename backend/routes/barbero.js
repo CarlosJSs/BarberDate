@@ -34,7 +34,7 @@ function authenticateToken(req, res, next){
 
 // Obtener todos los barberos
 //    /api/barber/all
-router.get('/all', authenticateToken, async(req, res) => {
+router.get('/all', async(req, res) => {
   const collBarber = await barberCollection.get()
   const barber = collBarber.docs.map((doc) => ({
     id: doc.id,
@@ -49,7 +49,7 @@ router.get('/all', authenticateToken, async(req, res) => {
 
 // Crear un barbero
 //    /api/barber/create
-router.post ('/create', authenticateToken, async (req, res) => {
+router.post ('/create', async (req, res) => {
 
   // Definir el cuerpo de la info
   const {
@@ -57,7 +57,7 @@ router.post ('/create', authenticateToken, async (req, res) => {
     correo,
     usuario,
     password,
-    rol
+		horarios
   } = req.body
 
   // Validar usuario
@@ -77,8 +77,9 @@ router.post ('/create', authenticateToken, async (req, res) => {
     nombre,
     correo,
     usuario,
-    password,
-    rol
+    password: passHashed,
+    rol: 'barbero',
+		horarios
   })
 
   // Mandar el mensaje de resultado OK
