@@ -1,150 +1,151 @@
 <template>
-<div class="container" >
-<!--Este es el sidebar de filtros de citas (Proximas y completadas)-->
-<div class="sidebar">
-
-    <h2>Filtros: </h2>
-    <button class="tab-button" @click="showTab('proximas')">Próximas Citas</button>
-    <button class="tab-button" @click="showTab('completadas')">Citas Completadas</button>
-    <div class="cita-detalle" id="citaDetalle">
+  <div class="container">
+    <!--Este es el sidebar de filtros de citas (Proximas y completadas)-->
+    <div class="sidebar">
+      <h2>Filtros: </h2>
+      <button class="tab-button" @click="showTab('proximas')">
+        Próximas Citas
+      </button>
+      <button class="tab-button" @click="showTab('completadas')">
+        Citas Completadas
+      </button>
+      <div id="citaDetalle" class="cita-detalle">
         <h3>Detalles de la Cita</h3>
         <p><strong>Fecha:</strong> - </p>
         <p><strong>Cliente/Barbero:</strong> - </p>
         <p><strong>Estado: </strong> - </p>
-
+      </div>
     </div>
 
-</div>
-
-<!-- Contenedor para el calendario...-->>
-<div class="calendar-container">
-<h2>BarberShop: Calendario de citas</h2>
-    <div id="calendarHeader">
-        <button @click="changeMonth(-1)">ANTERIOR</button>
+    <!-- Contenedor para el calendario...-->>
+    <div class="calendar-container">
+      <h2>BarberShop: Calendario de citas</h2>
+      <div id="calendarHeader">
+        <button @click="changeMonth(-1)">
+          ANTERIOR
+        </button>
         <span>{{ currentMonthName }} {{ currentYear }}</span>
-        <button @click="changeMonth(1)">SIGUIENTE</button>
-    </div>
+        <button @click="changeMonth(1)">
+          SIGUIENTE
+        </button>
+      </div>
 
-    <div id="calendarDays">
-        <div v-for="day in daysOfWeek" :key="day" class="day">{{ day }}</div>
-        <div v-for="n in firstDay" :key="'empty' + n" class="date"></div>
+      <div id="calendarDays">
+        <div v-for="day in daysOfWeek" :key="day" class="day">
+          {{ day }}
+        </div>
+        <div v-for="n in firstDay" :key="'empty' + n" class="date" />
         <div
-            v-for="day in daysInMonth" :key="day" class="date" :data-status="getCitaStatus(day)"
-            @mouseenter="showAppointmentTooltip(day)"
-            @mouseleave="hideAppointmentTooltip">
-        
-        {{ day }}
-        <div v-if="tooltipVisible && tooltipDay === day" class="tooltip">
-            <strong>Estado:</strong> {{ tooltipCita.status === "completed" ? "Concretada" : "Próxima" }} <br/>
-            <strong>Cliente:</strong> {{ tooltipCita.client }} <br/>
-            <strong>Barbero:</strong> {{ tooltipCita.barber }} <br/>
+          v-for="day in daysInMonth"
+          :key="day"
+          class="date"
+          :data-status="getCitaStatus(day)"
+          @mouseenter="showAppointmentTooltip(day)"
+          @mouseleave="hideAppointmentTooltip"
+        >
+          {{ day }}
+          <div v-if="tooltipVisible && tooltipDay === day" class="tooltip">
+            <strong>Estado:</strong> {{ tooltipCita.status === "completed" ? "Concretada" : "Próxima" }} <br>
+            <strong>Cliente:</strong> {{ tooltipCita.client }} <br>
+            <strong>Barbero:</strong> {{ tooltipCita.barber }} <br>
             <strong>Hora:</strong> {{ tooltipCita.time }}
-
+          </div>
         </div>
-
-        </div>
+      </div>
     </div>
-
-    </div>
-
-
-</div>
-
-    
+  </div>
 </template>
 
 <script>
-    export default {
-        data(){
-            return{
-                currentMonth: new Date().getMonth(),
-                currentYear: new Date().getFullYear(),
-                userRole : "cliente", //Aquí se fuerza el rol de cliente pero puede ser 'cliente', 'barbero' o 'admin'
+export default {
+  data () {
+    return {
+      currentMonth: new Date().getMonth(),
+      currentYear: new Date().getFullYear(),
+      userRole: 'cliente', // Aquí se fuerza el rol de cliente pero puede ser 'cliente', 'barbero' o 'admin'
 
-                citas:[
-                    {date: "2024-11-05", time: "10:30", client: "Luis Martínez", barber: "Carlos", status: "completed"},
-                    {date: "2024-11-09", time: "14:00", client: "Ana Pérez", barber: "Carlos", status:"upcoming"},
-                    {date: "2024-11-10", time: "16:30", client: "Luis Martínez", barber: "Juan", status:"upcoming"},
-                    {date: "2024-10-30", time: "12:00", client: "Carlos Gómez", barber: "Luis", status:"completed"} 
-            ], //Simulación para un perfil 'x' que pertenece a un cliente en este caso
-        daysOfWeek : ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SAB"],
-        tooltipVisible: false,
-        tooltipDay: null,
-        tooltipCita: {},
-        };
-        
-    }, 
+      citas: [
+        { date: '2024-11-05', time: '10:30', client: 'Luis Martínez', barber: 'Carlos', status: 'completed' },
+        { date: '2024-11-09', time: '14:00', client: 'Ana Pérez', barber: 'Carlos', status: 'upcoming' },
+        { date: '2024-11-10', time: '16:30', client: 'Luis Martínez', barber: 'Juan', status: 'upcoming' },
+        { date: '2024-10-30', time: '12:00', client: 'Carlos Gómez', barber: 'Luis', status: 'completed' }
+      ], // Simulación para un perfil 'x' que pertenece a un cliente en este caso
+      daysOfWeek: ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SAB'],
+      tooltipVisible: false,
+      tooltipDay: null,
+      tooltipCita: {}
+    }
+  },
 
-    computed: {
-        currentMonthName(){
-            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            return monthNames[this.currentMonth];
-        },
-        daysInMonth(){
-            return new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-        },
-
-        firstDay(){
-            return new Date(this.currentYear, this.currentMonth, 1).getDay();
-        },
-        
-        filteredCitas(){
-            return this.citas.filter(cita => {
-                if (this.userRole === "cliente") {
-                    return cita.client === "Luis Martínez" // Supongamos que un cliente Ej: Luis Martínez inició sesión...
-                } else if (this.userRole === "barbero"){
-                    return cita.barber === "Carlos"; //O supongamos que el empleado Carlos inició sesión
-                } else {
-                    return true;
-                }
-            });
-
-        }
-
+  computed: {
+    currentMonthName () {
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+      return monthNames[this.currentMonth]
+    },
+    daysInMonth () {
+      return new Date(this.currentYear, this.currentMonth + 1, 0).getDate()
     },
 
-    methods: {
-        showTab(tabId){
-           const estado = tabId === "proximas" ? "Próxima" : "Concretada";
-           const detalleCita = document.getElementById("citaDetalle");
-           detalleCita.innerHTML = `<h3>Detalles de las Citas</h3><p><strong>Estado:</strong> ${estado}</p>`; 
-        },
+    firstDay () {
+      return new Date(this.currentYear, this.currentMonth, 1).getDay()
+    },
 
-        changeMonth(direction){
-            this.currentMonth += direction;
-            if(this.currentMonth < 0){
-                this.currentMonth = 11;
-                this.currentYear -= 1;
-            } else if (this.currentMonth > 11){
-                this.currentMonth = 0;
-                this.currentYear += 1;
-            } 
-        },
-
-        getCitaStatus(day){
-            const date = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const cita = this.filteredCitas.find(c => c.date === date);
-            return cita ? cita.status : null;
-        },
-
-        showAppointmentTooltip(day){
-            const date = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const cita = this.filteredCitas.find(c=> c.date === date);
-            if(cita){
-                this.tooltipVisible = true;
-                this.tooltipDay = day;
-                this.tooltipCita = cita;
-            }
-        },
-
-        hideAppointmentTooltip(){
-            this.tooltipVisible = false;
-            this.tooltipDay = null;
-            this. tooltipCita = {}; 
+    filteredCitas () {
+      return this.citas.filter((cita) => {
+        if (this.userRole === 'cliente') {
+          return cita.client === 'Luis Martínez' // Supongamos que un cliente Ej: Luis Martínez inició sesión...
+        } else if (this.userRole === 'barbero') {
+          return cita.barber === 'Carlos' // O supongamos que el empleado Carlos inició sesión
+        } else {
+          return true
         }
+      })
     }
 
-};
+  },
+
+  methods: {
+    showTab (tabId) {
+      const estado = tabId === 'proximas' ? 'Próxima' : 'Concretada'
+      const detalleCita = document.getElementById('citaDetalle')
+      detalleCita.innerHTML = `<h3>Detalles de las Citas</h3><p><strong>Estado:</strong> ${estado}</p>`
+    },
+
+    changeMonth (direction) {
+      this.currentMonth += direction
+      if (this.currentMonth < 0) {
+        this.currentMonth = 11
+        this.currentYear -= 1
+      } else if (this.currentMonth > 11) {
+        this.currentMonth = 0
+        this.currentYear += 1
+      }
+    },
+
+    getCitaStatus (day) {
+      const date = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+      const cita = this.filteredCitas.find(c => c.date === date)
+      return cita ? cita.status : null
+    },
+
+    showAppointmentTooltip (day) {
+      const date = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+      const cita = this.filteredCitas.find(c => c.date === date)
+      if (cita) {
+        this.tooltipVisible = true
+        this.tooltipDay = day
+        this.tooltipCita = cita
+      }
+    },
+
+    hideAppointmentTooltip () {
+      this.tooltipVisible = false
+      this.tooltipDay = null
+      this.tooltipCita = {}
+    }
+  }
+
+}
 </script>
 
 <style scoped>
@@ -163,7 +164,6 @@
         margin : 20px auto;
         gap: 20px;
     }
-
 
     .sidebar{
         width: 25%;
@@ -229,7 +229,6 @@
         font-weight: bold;
     }
 
-
     .day{
         background-color: #ddd;
     }
@@ -249,8 +248,7 @@
         background-color: yellow;
     }
 
-
-    /*Este último corresponde a la ventana emergente que muestra 
+    /*Este último corresponde a la ventana emergente que muestra
     los detalles de la cita */
 
     .tooltip{

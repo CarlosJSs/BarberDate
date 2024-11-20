@@ -78,31 +78,32 @@ export default {
 
 <style scoped>
 .profile-page {
-  background-color: #001f3f; /* Azul oscuro */
+  background-color: #222222; /* Un tono gris oscuro para el fondo */
   color: white;
   min-height: 100vh;
   padding-top: 20px;
 }
 
 .profile-card {
-  max-width: 600px;
-  background-color: #111111; /* Negro */
+  max-width: 800px; /* Tamaño grande de la tarjeta */
+  background-color: #333333; /* Fondo oscuro para la tarjeta */
   border-radius: 15px;
-  padding: 20px;
+  padding: 40px;
+  width: 80%; /* Ancho de la tarjeta, cubriendo un 80% de la pantalla */
 }
 
 .profile-avatar img {
-  border: 2px solid #007bff; /* Azul */
+  border: 3px solid #007bff; /* Azul para bordear la imagen */
   border-radius: 50%;
 }
 
 .profile-name {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
   color: #007bff; /* Azul */
 }
 
 .profile-detail {
-  font-size: 16px;
+  font-size: 18px;
 }
 </style>
