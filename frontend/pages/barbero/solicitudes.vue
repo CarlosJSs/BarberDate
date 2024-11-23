@@ -215,6 +215,7 @@ h2 {
   font-size: 1.5rem;
   background: linear-gradient(90deg, #00c6ff, #0072ff);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   margin-bottom: 20px;
 }
