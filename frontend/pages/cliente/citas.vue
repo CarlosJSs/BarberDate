@@ -2,10 +2,10 @@
   <div class="container">
     <!-- Sección del formulario -->
     <div class="form-section">
-      <h2>Gestionar tus citas</h2>
+      <h2>Agendar una cita</h2>
       <div class="form-group">
         <label>Nombre de la cita</label>
-        <input v-model="cita.nombre" type="text" placeholder="ej: primer sesion">
+        <input v-model="cita.nombre" type="text" placeholder="">
       </div>
       <div class="form-group">
         <v-select
@@ -21,7 +21,10 @@
       <div class="form-group date-time-section">
         <div class="date-container">
           <label>Fecha</label>
-          <input v-model="cita.fecha" type="date">
+          <v-date-picker
+            v-model="cita.fecha"
+            :min="fechaActual"
+          />
         </div>
         <div class="time-container">
           <label>Horario</label>
@@ -29,7 +32,7 @@
             v-model="cita.hora"
             clearable
             label="Horario"
-            :items="['8:30', '9:00', '14:00', '16:00']"
+            :items="horariosBarbero"
             variant="outlined"
           />
         </div>
@@ -99,7 +102,8 @@ export default {
         barberoID: '',
         coments: ''
       },
-      clienteID: Cookies.get('userID')
+      clienteID: Cookies.get('userID'),
+      fechaActual: new Date().toISOString().substr(0, 10)
     }
   },
   computed: {
@@ -240,6 +244,7 @@ h2 {
   margin-bottom: 20px;
   background: linear-gradient(90deg, #00c6ff, #0072ff);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
 }
 

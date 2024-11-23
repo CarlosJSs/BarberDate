@@ -4,7 +4,7 @@
     <v-row justify="center" align="center" class="mb-5">
       <v-col cols="12" md="8" class="text-center white--text">
         <h1 class="display-2">
-          Bienvenidos a Barbería Estilo
+          Bienvenidos a Bruce's Barber Shop
         </h1>
         <p class="headline">
           Ofrecemos cortes de alta calidad y una experiencia única para cada cliente.

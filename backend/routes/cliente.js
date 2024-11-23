@@ -49,7 +49,7 @@ router.get('/all', authenticateToken, async(req, res) => {
 
 // Crear un cliente
 //    /api/cliente/create
-router.post ('/create', authenticateToken, async (req, res) => {
+router.post ('/create', async (req, res) => {
 
   // Definir el cuerpo de la info
   const {
@@ -131,7 +131,7 @@ router.get('/:id', authenticateToken, async(req, res) => {
 		})
 	}
 	res.status(201).json({
-		message: 'succes',
+		message: 'success',
 		cliente: {
 			id: collCliente.id,
 			...collCliente.data()

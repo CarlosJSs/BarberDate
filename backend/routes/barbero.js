@@ -131,7 +131,7 @@ router.get('/:id', authenticateToken, async(req, res) => {
 		})
 	}
 	res.status(201).json({
-		message: 'succes',
+		message: 'success',
 		barbero: {
 			id: collBarber.id,
 			...collBarber.data()

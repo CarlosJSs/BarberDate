@@ -8,19 +8,8 @@
           <v-col cols="12" md="4" class="text-center">
             <v-avatar size="150" class="profile-avatar mb-4">
               <img
-                v-if="user.genero === 'Male'"
-                :src="`https://randomuser.me/api/portraits/men/${user.index}.jpg`"
+                src="https://randomuser.me/api/portraits/men/1.jpg"
                 alt="Avatar Masculino"
-              >
-              <img
-                v-if="user.genero === 'Female'"
-                :src="`https://randomuser.me/api/portraits/women/${user.index}.jpg`"
-                alt="Avatar Femenino"
-              >
-              <img
-                v-if="user.genero === 'Other'"
-                :src="`https://randomuser.me/api/portraits/lego/${user.index}.jpg`"
-                alt="Avatar Otro"
               >
             </v-avatar>
           </v-col>
@@ -31,13 +20,13 @@
               {{ user.nombre }}
             </h2>
             <p class="text-subtitle-1 profile-detail">
-              Correo: {{ user.email }}
+              Correo: {{ user.correo }}
             </p>
             <p class="text-subtitle-1 profile-detail">
-              Teléfono: {{ user.telefono }}
+              Usuario: {{ user.usuario }}
             </p>
             <p class="text-subtitle-1 profile-detail">
-              Género: {{ user.genero }}
+              Horarios: {{ user.horarios }}
             </p>
           </v-col>
         </v-row>
@@ -58,19 +47,35 @@ export default {
   ],
   data () {
     return {
-      user: {
-        nombre: 'Carlos García',
-        email: 'carlos.garcia@example.com',
-        telefono: '555-987-6543',
-        genero: 'Male', // Puede ser 'Male', 'Female', 'Other'
-        index: 1 // Índice para la imagen randomuser
-      }
+      user: {},
+      barberoID: Cookies.get('userID')
     }
   },
   mounted () {
     const cookieToken = Cookies.get('token')
     if (!cookieToken) {
       this.$router.push('/')
+    }
+    this.loadInfo()
+  },
+  methods: {
+    loadInfo () {
+      this.token = Cookies.get('token')
+
+      this.$axios.get(`/barber/${this.barberoID}`, {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }).then((res) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ resBarbero => ', res.data)
+        if (res.data.message === 'success') {
+          this.user = res.data.barbero
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ error => ', error)
+      })
     }
   }
 }

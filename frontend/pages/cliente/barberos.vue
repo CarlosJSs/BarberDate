@@ -3,12 +3,12 @@
     <h2>Barberos Disponibles</h2>
     <div class="barberos-grid">
       <div v-for="barbero in barberos" :key="barbero.id" class="barbero-item">
-        <img :src="barbero.imagen" :alt="barbero.nombre" class="barbero-imagen">
+        <img src="https://img.freepik.com/vector-gratis/craneo-barbero-barba-bigote_225004-204.jpg?semt=ais_hybrid" :alt="barbero.nombre" class="barbero-imagen">
         <div class="barbero-info">
           <h3>{{ barbero.nombre }}</h3>
           <p><strong>Especialidad:</strong> {{ barbero.especialidad }}</p>
           <p><strong>Experiencia:</strong> {{ barbero.experiencia }} años</p>
-          <p><strong>Rating:</strong> {{ barbero.rating }} ⭐</p>
+          <p><strong>Descripcion:</strong> {{ barbero.descripcion }} </p>
         </div>
       </div>
     </div>
@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 
 export default {
   name: 'BarberosList',
@@ -26,40 +27,34 @@ export default {
   ],
   data () {
     return {
-      barberos: [
-        {
-          id: 1,
-          nombre: 'Juan Pérez',
-          especialidad: 'Cortes clásicos',
-          experiencia: 5,
-          rating: 4.5,
-          imagen: 'https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg'
-        },
-        {
-          id: 2,
-          nombre: 'Carlos Gómez',
-          especialidad: 'Estilos modernos',
-          experiencia: 3,
-          rating: 4.7,
-          imagen: 'https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg'
-        },
-        {
-          id: 3,
-          nombre: 'Luis Martínez',
-          especialidad: 'Barbas y cuidados',
-          experiencia: 7,
-          rating: 4.9,
-          imagen: 'https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg'
-        },
-        {
-          id: 4,
-          nombre: 'Salvador Ortiz',
-          especialidad: 'Barbas y nenas',
-          experiencia: 8,
-          rating: 5.0,
-          imagen: 'https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg'
+      barberos: []
+    }
+  },
+  mounted () {
+    const cookieToken = Cookies.get('token')
+    if (!cookieToken) {
+      this.$router.push('/')
+    }
+    this.loadBarberos()
+  },
+  methods: {
+    loadBarberos () {
+      this.token = Cookies.get('token')
+
+      this.$axios.get('/barber/all', {
+        headers: {
+          Authorization: `Bearer ${this.token}`
         }
-      ]
+      }).then((res) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ res => ', res.data)
+        if (res.data.message === 'success') {
+          this.barberos = res.data.barber
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ error => ', error)
+      })
     }
   }
 }
@@ -68,14 +63,13 @@ export default {
 <style scoped>
 /* Contenedor principal */
 .barberos-container {
-  background-image: url('https://i.pinimg.com/originals/31/c0/9d/31c09d8d455f5289c718c6796bed8a69.jpg');
+  background-image: url('https://i.pinimg.com/enabled_lo_mid/736x/b8/35/d6/b835d6d1d3af05ea0d7fea6db2688519.jpg');
   background-size: cover;
   background-position: center;
   padding: 30px; /* Aumentar el padding para más espacio */
   min-height: 100vh;
   color: #fff;
 }
-/* Título */
 /* Título */
 h2 {
   text-align: center;
@@ -91,10 +85,9 @@ h2 {
 /* Estilo para la cuadrícula */
 .barberos-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+  grid-template-columns: repeat(3, 1fr); /* Dos columnas */
   grid-template-rows: repeat(2, 1fr); /* Dos filas */
   gap: 30px; /* Aumentar el espacio entre los elementos */
-  max-width: 800px; /* Tamaño máximo de la cuadrícula */
   margin: 0 auto;
   justify-items: center; /* Centrar los elementos dentro de la cuadrícula */
 }
@@ -108,7 +101,7 @@ h2 {
   background: linear-gradient(135deg, #4e4e4e, #2c2c2c); /* Degradado gris a negro */
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
-  max-width: 350px;
+  max-width: 85%;
   width: 100%;
 }
 /* Efecto al pasar el ratón por encima de la tarjeta */
