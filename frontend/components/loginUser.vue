@@ -57,19 +57,68 @@
               </template>
             </v-text-field>
           </v-row>
+
+          <!-- Campos adicionales para el registro -->
+          <v-row v-if="isSignUp">
+            <v-text-field
+              v-model="name"
+              label="Full Name"
+              filled
+              rounded
+              dense
+              color="green darken-3"
+              outlined
+            />
+          </v-row>
+          <v-row v-if="isSignUp">
+            <v-text-field
+              v-model="email"
+              label="Email"
+              filled
+              rounded
+              dense
+              color="green darken-3"
+              outlined
+            />
+          </v-row>
+          <v-row v-if="isSignUp">
+            <v-text-field
+              v-model="phone"
+              label="Phone"
+              filled
+              rounded
+              dense
+              color="green darken-3"
+              outlined
+            />
+          </v-row>
         </v-card-text>
 
         <v-card-actions>
-          <!-- Botón de login centrado -->
-          <v-row align="center" justify="center" style="width: 100%;" class="mb-2 mt-2">
-            <v-btn color="blue darken-4" @click="loginBackend">
+          <v-row align="center" justify="center" class="mb-2 mt-2" style="width: 100%;">
+            <!-- Botón de login o signup -->
+            <v-btn color="blue darken-4" @click="handleSubmit">
               <span style="text-transform: none; color: white;">
-                Go
+                {{ isSignUp ? 'Crear cuenta' : 'Iniciar sesión' }}
               </span>
               <v-icon color="white" right>
-                mdi-login
+                {{ isSignUp ? 'mdi-account-plus' : 'mdi-login' }}
               </v-icon>
             </v-btn>
+          </v-row>
+
+          <v-row align="center" justify="center" style="width: 100%;">
+            <p
+              style="font-size: 12px; text-align: center; color: #1976d2; margin: 0; width: auto;"
+            >
+              {{ isSignUp ? 'Ya tienes cuenta?' : '¿Nuevo cliente? Crea tu cuenta' }}
+              <span
+                style="text-decoration: underline; cursor: pointer;"
+                @click="toggleSignUp"
+              >
+                {{ isSignUp ? 'Inicia sesión aquí' : 'Aquí' }}
+              </span>
+            </p>
           </v-row>
         </v-card-actions>
       </v-col>
@@ -79,27 +128,47 @@
 
 <script>
 import Cookies from 'js-cookie'
+
 export default {
   data () {
     return {
-      usuario: '',
-      password: '',
-      showPassword: false // Control para mostrar u ocultar la contraseña
+      usuario: '', // Nombre de usuario
+      password: '', // Contraseña
+      showPassword: false, // Control para mostrar u ocultar la contraseña
+      isSignUp: false, // Indica si el formulario es de registro o login
+      name: '', // Nombre completo (solo para signup)
+      email: '', // Correo electrónico (solo para signup)
+      phone: '' // Teléfono (solo para signup)
     }
   },
   methods: {
+    // Función para manejar el submit (login o signup)
+    handleSubmit () {
+      if (this.isSignUp) {
+        this.signUpBackend() // Si es signup, realiza el registro
+      } else {
+        this.loginBackend() // Si no, realiza el login
+      }
+    },
+    // Función para login
     loginBackend () {
+      if (!this.usuario || !this.password) {
+        alert('Por favor ingresa usuario y contraseña.') // Verifica que usuario y contraseña estén presentes
+        return
+      }
+
       const body = {
         usuario: this.usuario,
         password: this.password
       }
 
-      // Peticion axios para el login
+      // Petición axios para el login
       this.$axios.post('auth/login', body)
         .then((res) => {
           if (res.data && res.data.token) {
             Cookies.set('token', res.data.token, { expires: 1, path: '/' })
             Cookies.set('role', res.data.role, { expires: 1, path: '/' })
+            Cookies.set('userID', res.data.userID, { expires: 1, path: '/' })
             const role = res.data.role
             if (role === 'admin') {
               this.$router.push('/admin')
@@ -119,8 +188,54 @@ export default {
           this.errorMessage = error.response?.data?.error || 'Error al iniciar sesion'
         })
     },
+    // Función para signup
+    signUpBackend () {
+      if (!this.name || !this.email || !this.phone || !this.usuario || !this.password) {
+        alert('Por favor completa todos los campos.') // Verifica que todos los campos del registro estén llenos
+        return
+      }
+
+      const body = {
+        usuario: this.usuario,
+        password: this.password,
+        name: this.name,
+        email: this.email,
+        phone: this.phone
+      }
+
+      // Petición axios para el signup
+      this.$axios.post('auth/signup', body)
+        .then((res) => {
+          if (res.data && res.data.token) {
+            Cookies.set('token', res.data.token, { expires: 1, path: '/' })
+            Cookies.set('role', res.data.role, { expires: 1, path: '/' })
+            Cookies.set('userID', res.data.userID, { expires: 1, path: '/' })
+            const role = res.data.role
+            if (role === 'admin') {
+              this.$router.push('/admin')
+            } else if (role === 'barbero') {
+              this.$router.push('/barbero')
+            } else if (role === 'cliente') {
+              this.$router.push('/cliente')
+            } else {
+              // eslint-disable-next-line no-console
+              console.error('Rol desconocido: ', role)
+            }
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error('@@ error => ', error)
+          this.errorMessage = error.response?.data?.error || 'Error al registrarse'
+        })
+    },
+    // Función para alternar la visibilidad de la contraseña
     togglePasswordVisibility () {
       this.showPassword = !this.showPassword
+    },
+    // Función para cambiar entre signup y login
+    toggleSignUp () {
+      this.isSignUp = !this.isSignUp // Cambia el estado entre signup y login
     }
   }
 }
@@ -138,11 +253,10 @@ export default {
 }
 
 /* Tipografía para el título */
-@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 .barber-title {
-  font-family: 'Lobster', cursive;
-  font-size: 1.5em;
-  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
 }
 
 /* Centrado del label */

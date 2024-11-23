@@ -31,7 +31,7 @@
           <v-card-subtitle>{{ cita.fecha }}</v-card-subtitle>
           <v-card-text>
             Hora: {{ cita.hora }}<br>
-            Barbero: {{ cita.barbero }}<br>
+            Barbero: {{ barberosMap[cita.barberoID] || 'Barbero desconocido' }}<br>
           </v-card-text>
         </v-card>
       </v-col>
@@ -55,19 +55,19 @@ export default {
   ],
   data () {
     return {
-      citas: [
-        { id: 1, nombre: 'Cita 1', fecha: '2024-11-15', hora: '10:00 AM', barbero: 1 },
-        { id: 2, nombre: 'Cita 2', fecha: '2024-11-16', hora: '12:00 PM', barbero: 2 },
-        { id: 3, nombre: 'Cita 3', fecha: '2024-11-17', hora: '02:00 PM', barbero: 3 }
-      ],
-      barberos: [
-        { id: 1, nombre: 'Juan' },
-        { id: 2, nombre: 'Carlos' },
-        { id: 3, nombre: 'Luis' }
-      ],
+      citas: [],
+      barberos: [],
       filtroBarbero: null,
       filtroFecha: null,
       citasFiltradas: []
+    }
+  },
+  computed: {
+    barberosMap () {
+      return this.barberos.reduce((map, barbero) => {
+        map[barbero.id] = barbero.nombre
+        return map
+      }, {})
     }
   },
   watch: {
@@ -83,14 +83,53 @@ export default {
     if (!cookieToken) {
       this.$router.push('/')
     }
-    this.citasFiltradas = this.citas
+    this.loadCitas()
+    this.loadBarberos()
   },
   methods: {
     filtrarCitas () {
       this.citasFiltradas = this.citas.filter((cita) => {
-        const coincideBarbero = this.filtroBarbero ? cita.barbero === this.filtroBarbero : true
+        const coincideBarbero = this.filtroBarbero ? cita.barberoID === this.filtroBarbero : true
         const coincideFecha = this.filtroFecha ? cita.fecha === this.filtroFecha : true
         return coincideBarbero && coincideFecha
+      })
+    },
+    loadCitas () {
+      this.token = Cookies.get('token')
+
+      this.$axios.get('/citas/all', {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }).then((res) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ resCitas => ', res.data)
+        if (res.data.message === 'success') {
+          this.citas = res.data.cita
+          this.citasFiltradas = this.citas
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ error => ', error)
+      })
+    },
+    loadBarberos () {
+      this.token = Cookies.get('token')
+
+      // Utilizamos Axios para el endpoint
+      this.$axios.get('/barber/all', {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }).then((res) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ resBarber => ', res.data)
+        if (res.data.message === 'success') {
+          this.barberos = res.data.barber
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ error => ', error)
       })
     }
   }
@@ -102,4 +141,5 @@ h2 {
   text-align: center;
   margin-bottom: 20px;
 }
+
 </style>

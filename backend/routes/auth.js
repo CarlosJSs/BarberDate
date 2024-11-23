@@ -78,8 +78,8 @@ router.post('/login', async (req, res) => {
       role
     })
 
-    res.status(201).json({ token, role })
-  } catch (error) {
+    res.status(201).json({ token, role, userID: findUser.docs[0].id })
+  } catch (error) {``
     res.status(500).json({ error: 'Error en el servidor', details: error.message })
   }
 })
