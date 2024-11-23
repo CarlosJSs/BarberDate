@@ -95,15 +95,6 @@ router.post ('/request', async (req, res) => {
     coments
   } = req.body
 
-  // Validar cita
-  const findCita = await citasCollection.where('nombre', '==', nombre).get()
-
-  if(!findCita.empty){
-    return res.status(400).json({
-      error: 'El nombre de la cita ya existe'
-    })
-  }
-
   // Agregar el nuevo admin
   await citasCollection.add({
     nombre,
@@ -170,7 +161,7 @@ router.delete ('/:id', async (req, res) => {
     })
   } catch (error) {
     res.status(400).json({
-      error: 'No s epuede borrar la cita mediante el ID'
+      error: 'No se puede borrar la cita mediante el ID'
     })
   }
 })

@@ -110,8 +110,7 @@ export default {
         const body = {
           nombre: this.admin.nombre,
           usuario: this.admin.usuario,
-          password: this.admin.contrasena,
-          rol: 'admin'
+          password: this.admin.contrasena
         }
 
         // Peticion a axios
