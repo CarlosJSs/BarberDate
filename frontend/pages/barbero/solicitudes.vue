@@ -33,6 +33,7 @@
         </tbody>
       </table>
     </div>
+
     <!-- Sección de la lista de solicitudes negadas -->
     <div class="solicitudes-section">
       <h2>Tus citas negadas</h2>
@@ -188,6 +189,7 @@ export default {
 </script>
 
 <style scoped>
+/* General */
 .container {
   display: flex;
   justify-content: space-between;
@@ -195,52 +197,26 @@ export default {
   color: #ffffff;
 }
 
-.form-section, .solicitudes-section {
+.solicitudes-section {
   width: 48%;
-  background-color: #333333;
+  background: linear-gradient(145deg, #2b3745, #1c2431);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.solicitudes-section:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
 }
 
 h2 {
-  color: #ffffff;
+  font-size: 1.5rem;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  -webkit-background-clip: text;
+  color: transparent;
   margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-input[type="text"], input[type="email"], input[type="password"], input[type="file"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #444444;
-  border-radius: 5px;
-  background-color: #222222;
-  color: #ffffff;
-}
-
-.add-button, .agree-button, .delete-button {
-  padding: 10px 15px;
-  margin-right: 5px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.add-button {
-  background-color: #28a745;
-  color: #ffffff;
-}
-
-.agree-button {
-  background-color: #28a745;
-  color: #ffffff;
-}
-
-.delete-button {
-  background-color: #dc3545;
-  color: #ffffff;
 }
 
 table {
@@ -249,20 +225,50 @@ table {
   color: #ffffff;
 }
 
+thead {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+}
+
 th, td {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #444444;
 }
 
-th {
-  background-color: #555555;
+tbody tr:nth-child(even) {
+  background-color: #2a2d34;
 }
 
-.table-image, .preview-image {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 50%;
+tbody tr:hover {
+  background-color: #3a3d45;
+  transition: background-color 0.3s ease;
+}
+
+button {
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.agree-button {
+  background: linear-gradient(90deg, #00c851, #007e33);
+  color: #ffffff;
+}
+
+.agree-button:hover {
+  background: linear-gradient(90deg, #007e33, #00c851);
+  box-shadow: 0 4px 10px rgba(0, 200, 81, 0.5);
+}
+
+.delete-button {
+  background: linear-gradient(90deg, #ff4444, #cc0000);
+  color: #ffffff;
+}
+
+.delete-button:hover {
+  background: linear-gradient(90deg, #cc0000, #ff4444);
+  box-shadow: 0 4px 10px rgba(255, 68, 68, 0.5);
 }
 </style>
