@@ -9,11 +9,14 @@
       <div class="card-int">
         <div class="hello">
           Próxima cita
-          <span class="hidden">
-            Cliente: {{ cita.client }}<br>
-            Fecha: {{ cita.date }}<br>
-            Hora: {{ cita.time }}<br>
-            Comentarios: {{ cita.notes }}
+          <span v-if="nextCita" class="hidden">
+            Cliente: {{ clienteMap[nextCita.clienteID] || 'Desconocido' }}<br>
+            Fecha: {{ nextCita.fecha }}<br>
+            Hora: {{ nextCita.hora }}<br>
+            Comentarios: {{ nextCita.coments }}
+          </span>
+          <span v-else class="hidden">
+            No hay citas proximas
           </span>
         </div>
       </div>
@@ -27,9 +30,11 @@
 
     <div class="watch">
       <div class="frame">
-        <div class="text">
+        <div class="text" :class="{ 'freeStatus': barberStatus === 'libre' }">
           <div>status:</div>
-          <div>ocupado</div>
+          <div>
+            {{ barberStatus }}
+          </div>
         </div>
       </div>
       <div class="sideBtn"></div>
@@ -54,23 +59,13 @@ export default {
     'detect-push',
     'auth-role'
   ],
-
   data () {
     return {
-      // Acá tenemos una simulación con los datos de la cita del barbero
-      cita: {
-        client: 'Jesús',
-        barber: 'pedro',
-        date: '2024-11-15',
-        time: '16:00',
-        services: ['Corte de Cabello', 'Afeitado'],
-        duration: 45,
-        notes: 'Prefiere un corte de estilo clásico y un afeitado limpio.',
-        status: 'upcoming'
-      }
+      barberoID: Cookies.get('userID'),
+      nextCita: null,
+      clientes: []
     }
   },
-
   computed: {
     statusClass () {
       return this.cita.status === 'completed'
@@ -78,15 +73,35 @@ export default {
         : this.cita.status === 'upcoming'
           ? 'status-upcoming'
           : 'status-not-completed'
+    },
+    clienteMap () {
+      return this.clientes.reduce((map, cliente) => {
+        map[cliente.id] = cliente.nombre
+        return map
+      }, {})
+    },
+    barberStatus () {
+      if (!this.nextCita) {
+        return 'libre'
+      }
+
+      const ahora = new Date()
+      const hoy = ahora.toISOString().split('T')[0]
+
+      if (this.nextCita.fecha === hoy) {
+        return 'ocupado'
+      }
+
+      return 'libre'
     }
-
   },
-
   mounted () {
     const cookieToken = Cookies.get('token')
     if (!cookieToken) {
       this.$router.push('/')
     }
+    this.loadClientes()
+    this.loadNextCita()
   },
   methods: {
     formatDate (date) {
@@ -99,6 +114,74 @@ export default {
         : status === 'upcoming'
           ? 'Próxima'
           : 'No concretada'
+    },
+    loadClientes () {
+      this.token = Cookies.get('token')
+
+      this.$axios.get('/cliente/all', {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }).then((res) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ resClientes => ', res.data)
+        if (res.data.message === 'success') {
+          this.clientes = res.data.cliente
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log('@@@ error => ', error)
+      })
+    },
+    async getNextCita () {
+      try {
+        this.token = Cookies.get('token')
+
+        const res = await this.$axios.get(`/citas/aproved/${this.barberoID}`, {
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        })
+
+        if (res.data.message === 'success') {
+          const misCitas = res.data.citas
+          const ahora = new Date()
+
+          const nextCitas = misCitas.filter((cita) => {
+            const citaFecha = new Date(`${cita.fecha}T${cita.hora}`)
+            return citaFecha > ahora
+          })
+
+          nextCitas.sort((a, b) => {
+            const fechaA = new Date(`${a.fecha}T${a.hora}`)
+            const fechaB = new Date(`${b.fecha}T${b.hora}`)
+            return fechaA - fechaB
+          })
+
+          return nextCitas.length > 0 ? nextCitas[0] : null
+        } else {
+          return null
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('@@@ errorgetNextCita => ', error)
+        return null
+      }
+    },
+    async loadNextCita () {
+      try {
+        this.nextCita = await this.getNextCita()
+        if (this.nextCita) {
+          // eslint-disable-next-line no-console
+          console.log('Proxima cita cargada', this.nextCita)
+        } else {
+          // eslint-disable-next-line no-console
+          console.log('No hay proximas citas')
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error al cargar la proxima cita', error)
+      }
     }
   }
 }
@@ -234,7 +317,6 @@ export default {
   opacity: 0;
   transition: all 0.3s ease-in;
   font-size: .44em;
-  padding-left: 3em;
   padding-top: 3em;
   text-align: start;
 }
@@ -309,8 +391,12 @@ export default {
   font-size: 4em;
   font-family: serif;
   font-weight: bolder;
-  line-height: 0.8;
+  line-height: 1.5;
   text-shadow: 0 0 40px #d7d886c7;
+}
+.freeStatus {
+  color: #39ff14;
+  text-shadow: 0 0 40px #12df0bd3;
 }
 .frame::before {
   border: 1px solid #0d0d0d;

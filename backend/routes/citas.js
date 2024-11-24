@@ -230,4 +230,36 @@ router.get('/barbero/:barberoID', async (req, res) => {
   }
 })
 
+// Obtener las citas aprobadas de un barbero
+//    /api/citas/aproved/:barberoID
+router.get('/aproved/:barberoID', async (req, res) => {
+  const barberoID = req.params.barberoID
+
+  try {
+    const snapshot = await citasCollection.where('barberoID', '==', barberoID).where('status', '==', 'aproved').get()
+
+    if (snapshot.empty) {
+      return res.status(404).json({
+        message: 'No se encontraron citas aprovadas para este barbero'
+      })
+    }
+
+    const citas = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+
+    res.status(200).json({
+      message: 'success',
+      citas
+    })
+  } catch (error) {
+    console.error('Error obteniendo citas: ', error)
+    res.status(500).json({
+      message: 'Error del servidor al obtener citas',
+      error: error.message
+    })
+  }
+})
+
 export default router
