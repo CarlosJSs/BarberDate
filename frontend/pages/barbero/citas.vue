@@ -242,7 +242,8 @@ export default {
   color: #fff;
   padding: 15px;
   border-radius: 8px;
-
+  max-height: 85vh;
+  overflow-y: auto;
 }
 .sidebar h2 {
   margin-bottom: 20px;

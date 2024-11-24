@@ -21,10 +21,7 @@
       <div class="form-group date-time-section">
         <div class="date-container">
           <label>Fecha</label>
-          <v-date-picker
-            v-model="cita.fecha"
-            :min="fechaActual"
-          />
+          <input v-model="cita.fecha" type="date" :min="fechaActual">
         </div>
         <div class="time-container">
           <label>Horario</label>
@@ -101,6 +98,7 @@ export default {
     return {
       barberos: [],
       citasCliente: [],
+      horariosOcupados: {},
       cita: {
         nombre: '',
         fecha: '',
@@ -120,8 +118,21 @@ export default {
       }, {})
     },
     horariosBarbero () {
-      const barberSelected = this.barberos.find(barbero => barbero.id === this.cita.barberoID)
-      return barberSelected ? barberSelected.horarios : []
+      const barberSelected = this.cita.barberoID
+      const selectedDate = this.cita.fecha
+
+      if (!barberSelected || !selectedDate) {
+        return []
+      }
+
+      const barber = this.barberos.find(barbero => barbero.id === barberSelected)
+      if (!barber) {
+        return []
+      }
+
+      const horariosOcupadosOn = this.horariosOcupados[barberSelected]?.[selectedDate] || []
+
+      return barber.horarios.filter(horario => !horariosOcupadosOn.includes(horario))
     },
     citasClienteFiltradas () {
       return this.citasCliente.filter(cita => !cita.archivado)
@@ -202,10 +213,28 @@ export default {
         console.log('@@@ resCitas => ', res.data)
         if (res.data.message === 'success') {
           this.citasCliente = res.data.citas
+          this.updateHorariosOcupados()
         }
       }).catch((error) => {
         // eslint-disable-next-line no-console
         console.log('@@@ error => ', error)
+      })
+    },
+    updateHorariosOcupados () {
+      this.horariosOcupados = {}
+
+      this.citasCliente.forEach((cita) => {
+        const { barberoID, fecha, hora } = cita
+
+        if (!this.horariosOcupados[barberoID]) {
+          this.horariosOcupados[barberoID] = {}
+        }
+
+        if (!this.horariosOcupados[barberoID][fecha]) {
+          this.horariosOcupados[barberoID][fecha] = []
+        }
+
+        this.horariosOcupados[barberoID][fecha].push(hora)
       })
     },
     clearForm () {
@@ -268,6 +297,14 @@ export default {
         // eslint-disable-next-line no-console
         console.error('@@ error => ', error)
       })
+    },
+    validarFecha (fecha) {
+      if (fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        this.cita.fecha = fecha
+      } else {
+        // eslint-disable-next-line no-console
+        console.error('Formato de fecha no válido:', fecha)
+      }
     }
   }
 }
