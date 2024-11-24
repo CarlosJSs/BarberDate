@@ -19,11 +19,6 @@
         <label>Contraseña</label>
         <input v-model="barbero.contrasena" type="password" placeholder="Ingrese la contraseña">
       </div>
-      <div class="form-group">
-        <label>Foto del Barbero</label>
-        <input type="file" @change="onFileChange">
-        <img v-if="barbero.imagen" :src="barbero.imagen" class="preview-image">
-      </div>
       <button class="add-button" @click="addBarbero">
         Agregar Barbero
       </button>
@@ -35,7 +30,6 @@
       <table>
         <thead>
           <tr>
-            <th>Foto</th>
             <th>Nombre</th>
             <th>Correo</th>
             <th>Usuario</th>
@@ -44,7 +38,6 @@
         </thead>
         <tbody>
           <tr v-for="(myBarber, index) in barberos" :key="index">
-            <td><img v-if="myBarber.imagen" :src="myBarber.imagen" class="table-image"></td>
             <td v-show="false">
               {{ myBarber.id }}
             </td>
@@ -78,8 +71,7 @@ export default {
         nombre: '',
         correo: '',
         usuario: '',
-        contrasena: '',
-        imagen: ''
+        contrasena: ''
       },
       barberos: []
     }
@@ -164,18 +156,7 @@ export default {
         nombre: '',
         correo: '',
         usuario: '',
-        contrasena: '',
-        imagen: ''
-      }
-    },
-    onFileChange (e) {
-      const file = e.target.files[0]
-      if (file) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          this.barbero.imagen = e.target.result
-        }
-        reader.readAsDataURL(file)
+        contrasena: ''
       }
     }
   }

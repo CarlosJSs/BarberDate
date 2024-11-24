@@ -150,6 +150,10 @@ export default {
         this.loginBackend() // Si no, realiza el login
       }
     },
+    // Función para cambiar entre signup y login
+    toggleSignUp () {
+      this.isSignUp = !this.isSignUp // Cambia el estado entre signup y login
+    },
     // Función para login
     loginBackend () {
       if (!this.usuario || !this.password) {
@@ -196,46 +200,41 @@ export default {
       }
 
       const body = {
+        nombre: this.name,
+        correo: this.email,
+        telefono: this.phone,
         usuario: this.usuario,
-        password: this.password,
-        name: this.name,
-        email: this.email,
-        phone: this.phone
+        password: this.password
       }
 
-      // Petición axios para el signup
-      this.$axios.post('auth/signup', body)
-        .then((res) => {
-          if (res.data && res.data.token) {
-            Cookies.set('token', res.data.token, { expires: 1, path: '/' })
-            Cookies.set('role', res.data.role, { expires: 1, path: '/' })
-            Cookies.set('userID', res.data.userID, { expires: 1, path: '/' })
-            const role = res.data.role
-            if (role === 'admin') {
-              this.$router.push('/admin')
-            } else if (role === 'barbero') {
-              this.$router.push('/barbero')
-            } else if (role === 'cliente') {
-              this.$router.push('/cliente')
-            } else {
-              // eslint-disable-next-line no-console
-              console.error('Rol desconocido: ', role)
-            }
-          }
-        })
-        .catch((error) => {
+      // Petición axios para crear cliente
+      this.$axios.post('/cliente/create', body, {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-type': 'application/json'
+        }
+      }).then((res) => {
+        // eslint-disable-next-line no-console
+        console.log('@@ res new Cliente => ', res)
+        if (res && res.data && res.data.message === 'success') {
           // eslint-disable-next-line no-console
-          console.error('@@ error => ', error)
-          this.errorMessage = error.response?.data?.error || 'Error al registrarse'
-        })
+          console.log('@@ res message => ', res.data.message)
+          alert('Su cuenta se ha creado con exito')
+          this.name = ''
+          this.email = ''
+          this.phone = ''
+          this.usuario = ''
+          this.password = ''
+          this.toggleSignUp()
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('@@ error => ', error)
+      })
     },
     // Función para alternar la visibilidad de la contraseña
     togglePasswordVisibility () {
       this.showPassword = !this.showPassword
-    },
-    // Función para cambiar entre signup y login
-    toggleSignUp () {
-      this.isSignUp = !this.isSignUp // Cambia el estado entre signup y login
     }
   }
 }

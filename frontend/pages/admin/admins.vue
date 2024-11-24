@@ -15,11 +15,6 @@
         <label>Contraseña</label>
         <input v-model="admin.contrasena" type="password" placeholder="Ingrese la contraseña">
       </div>
-      <div class="form-group">
-        <label>Foto del Admin</label>
-        <input type="file" @change="onFileChange">
-        <img v-if="admin.imagen" :src="admin.imagen" class="preview-image">
-      </div>
       <button class="add-button" @click="addAdmin">
         Agregar Admin
       </button>
@@ -31,7 +26,6 @@
       <table>
         <thead>
           <tr>
-            <th>Foto</th>
             <th>Nombre</th>
             <th>Usuario</th>
             <th>Acciones</th>
@@ -39,7 +33,6 @@
         </thead>
         <tbody>
           <tr v-for="(admon, index) in administradores" :key="index">
-            <td><img v-if="admon.imagen" :src="admon.imagen" class="table-image"></td>
             <td v-show="false">
               {{ admon.id }}
             </td>
@@ -72,8 +65,7 @@ export default {
         nombre: '',
         usuario: '',
         contrasena: '',
-        rol: '',
-        imagen: ''
+        rol: ''
       },
       administradores: []
     }
@@ -155,18 +147,7 @@ export default {
       this.admin = {
         nombre: '',
         usuario: '',
-        contrasena: '',
-        imagen: ''
-      }
-    },
-    onFileChange (e) {
-      const file = e.target.files[0]
-      if (file) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          this.admin.imagen = e.target.result
-        }
-        reader.readAsDataURL(file)
+        contrasena: ''
       }
     }
   }

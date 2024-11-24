@@ -13,6 +13,7 @@
             :to="item.to"
             router
             exact
+            class="itemPage"
           >
             <v-list-item-action>
               <v-icon>{{ item.icon }}</v-icon>
@@ -48,22 +49,22 @@ export default {
       fixed: false,
       items: [
         {
-          icon: 'mdi-account',
+          icon: 'mdi-home-variant',
           title: 'Dashboard',
           to: '/cliente'
         },
         {
-          icon: 'mdi-account',
+          icon: 'mdi-calendar-range',
           title: 'Mis Citas',
           to: '/cliente/citas'
         },
         {
-          icon: 'mdi-account',
+          icon: 'mdi-card-account-details-outline',
           title: 'Ver Barberos',
           to: '/cliente/barberos'
         },
         {
-          icon: 'mdi-account',
+          icon: 'mdi-account-circle',
           title: 'Perfil',
           to: '/cliente/perfil'
         },
@@ -95,5 +96,10 @@ export default {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
+}
+.itemPage {
+  margin-bottom: .8em;
+  border: 1px solid #3b3b3b;
+  border-radius: 16px;
 }
 </style>

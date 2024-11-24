@@ -2,10 +2,10 @@
   <div class="container">
     <!-- Sección del formulario -->
     <div class="form-section">
-      <h2>Gestionar tus citas</h2>
+      <h2>Agendar una cita</h2>
       <div class="form-group">
         <label>Nombre de la cita</label>
-        <input v-model="cita.nombre" type="text" placeholder="ej: primer sesion">
+        <input v-model="cita.nombre" type="text" placeholder="">
       </div>
       <div class="form-group">
         <v-select
@@ -21,7 +21,7 @@
       <div class="form-group date-time-section">
         <div class="date-container">
           <label>Fecha</label>
-          <input v-model="cita.fecha" type="date">
+          <input v-model="cita.fecha" type="date" :min="fechaActual">
         </div>
         <div class="time-container">
           <label>Horario</label>
@@ -29,7 +29,7 @@
             v-model="cita.hora"
             clearable
             label="Horario"
-            :items="['8:30', '9:00', '14:00', '16:00']"
+            :items="horariosBarbero"
             variant="outlined"
           />
         </div>
@@ -60,15 +60,21 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(myCita, index) in citasCliente" :key="index">
+          <tr v-for="(myCita, index) in citasClienteFiltradas" :key="index">
             <td>{{ myCita.nombre }}</td>
             <td>{{ myCita.fecha }}</td>
             <td>{{ myCita.hora }}</td>
             <td>{{ barberosMap[myCita.barberoID] || 'Desconocido' }}</td>
             <td>{{ myCita.status }}</td>
             <td>
-              <button class="delete-button">
+              <button v-if="myCita.status === 'pending'" class="cancel-button" @click="cancelCita(myCita.id)">
                 Cancelar
+              </button>
+              <button v-else-if="myCita.status === 'denied'" class="delete-button" @click="deleteCita(myCita.id)">
+                Eliminar
+              </button>
+              <button v-else class="archivar-button" @click="archivarCita(myCita)">
+                Archivar
               </button>
             </td>
           </tr>
@@ -92,6 +98,7 @@ export default {
     return {
       barberos: [],
       citasCliente: [],
+      horariosOcupados: {},
       cita: {
         nombre: '',
         fecha: '',
@@ -99,7 +106,8 @@ export default {
         barberoID: '',
         coments: ''
       },
-      clienteID: Cookies.get('userID')
+      clienteID: Cookies.get('userID'),
+      fechaActual: new Date().toISOString().substr(0, 10)
     }
   },
   computed: {
@@ -110,8 +118,24 @@ export default {
       }, {})
     },
     horariosBarbero () {
-      const barberSelected = this.barberos.find(barbero => barbero.id === this.cita.barberoID)
-      return barberSelected ? barberSelected.horarios : []
+      const barberSelected = this.cita.barberoID
+      const selectedDate = this.cita.fecha
+
+      if (!barberSelected || !selectedDate) {
+        return []
+      }
+
+      const barber = this.barberos.find(barbero => barbero.id === barberSelected)
+      if (!barber) {
+        return []
+      }
+
+      const horariosOcupadosOn = this.horariosOcupados[barberSelected]?.[selectedDate] || []
+
+      return barber.horarios.filter(horario => !horariosOcupadosOn.includes(horario))
+    },
+    citasClienteFiltradas () {
+      return this.citasCliente.filter(cita => !cita.archivado)
     }
   },
   mounted () {
@@ -189,10 +213,28 @@ export default {
         console.log('@@@ resCitas => ', res.data)
         if (res.data.message === 'success') {
           this.citasCliente = res.data.citas
+          this.updateHorariosOcupados()
         }
       }).catch((error) => {
         // eslint-disable-next-line no-console
         console.log('@@@ error => ', error)
+      })
+    },
+    updateHorariosOcupados () {
+      this.horariosOcupados = {}
+
+      this.citasCliente.forEach((cita) => {
+        const { barberoID, fecha, hora } = cita
+
+        if (!this.horariosOcupados[barberoID]) {
+          this.horariosOcupados[barberoID] = {}
+        }
+
+        if (!this.horariosOcupados[barberoID][fecha]) {
+          this.horariosOcupados[barberoID][fecha] = []
+        }
+
+        this.horariosOcupados[barberoID][fecha].push(hora)
       })
     },
     clearForm () {
@@ -202,6 +244,66 @@ export default {
         hora: '',
         barberoID: '',
         coments: ''
+      }
+    },
+    archivarCita (cita) {
+      cita.archivado = true
+
+      this.$axios.put(`/citas/status/${cita.id}`, { archivado: true }, {
+        headers: { Authorization: `Bearer ${this.token}` }
+      }).then((res) => {
+        if (res.data.message === 'success') {
+          // eslint-disable-next-line no-console
+          console.log('Cita archivada correctamente')
+          this.loadMisCitas()
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Error al archivar la cita:', error)
+      })
+    },
+    cancelCita (id) {
+      const body = {
+        status: 'denied'
+      }
+
+      this.$axios.put(`/citas/status/${id}`, body, {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-type': 'application/json'
+        }
+      }).then((res) => {
+        // eslint-disable-next-line no-console
+        console.log('@@ res 1 => ', res)
+        if (res && res.data && res.data.message === 'success') {
+          // eslint-disable-next-line no-console
+          console.log('@@ res message => ', res.data.message)
+          this.loadMisCitas()
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('@@ error => ', error)
+      })
+    },
+    deleteCita (citaID) {
+      this.$axios.delete(`/citas/${citaID}`, {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-type': 'application/json'
+        }
+      }).then((res) => {
+        this.loadMisCitas()
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('@@ error => ', error)
+      })
+    },
+    validarFecha (fecha) {
+      if (fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        this.cita.fecha = fecha
+      } else {
+        // eslint-disable-next-line no-console
+        console.error('Formato de fecha no válido:', fecha)
       }
     }
   }
@@ -240,6 +342,7 @@ h2 {
   margin-bottom: 20px;
   background: linear-gradient(90deg, #00c6ff, #0072ff);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
 }
 
@@ -304,6 +407,34 @@ input[type="text"]:focus, input[type="date"]:focus {
 .delete-button:hover {
   background: linear-gradient(90deg, #cc0000, #ff4444);
   box-shadow: 0 4px 10px rgba(255, 68, 68, 0.5);
+}
+
+.cancel-button {
+  background: linear-gradient(90deg, #ffe344, #ccb800);
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cancel-button:hover {
+  background: linear-gradient(90deg, #ccbe00, #ffec44);
+  box-shadow: 0 4px 10px rgba(255, 252, 68, 0.5);
+}
+
+.archivar-button {
+  background: linear-gradient(90deg, #44ff44, #07cc00);
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.archivar-button:hover {
+  background: linear-gradient(90deg, #07cc00, #44ff44);
+  box-shadow: 0 4px 10px rgba(99, 255, 68, 0.5);
 }
 
 /* Tabla */
