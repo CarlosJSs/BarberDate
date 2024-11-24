@@ -32,6 +32,9 @@
               <p class="text-subtitle-1 profile-detail">
                 Experiencia: {{ user.experiencia }}
               </p>
+              <p class="text-subtitle-1 profile-detail">
+                Descripcion: {{ user.descripcion }}
+              </p>
             </v-col>
           </v-row>
         </v-card>
@@ -57,6 +60,16 @@
               outlined
               clearable
               :rules="[rules.required, rules.numeric]"
+            />
+
+            <!-- Descripcion -->
+            <v-text-field
+              v-model="formData.descripcion"
+              label="Breve descripcion"
+              type="text"
+              outlined
+              clearable
+              :rules="[rules.required]"
             />
 
             <!-- Horarios -->
@@ -131,6 +144,7 @@ export default {
       formData: {
         especialidad: '',
         experiencia: '',
+        descripcion: '',
         horarios: []
       },
       rules: {
@@ -163,6 +177,7 @@ export default {
           this.formData.horarios = this.user.horarios
           this.formData.especialidad = this.user.especialidad
           this.formData.experiencia = this.user.experiencia
+          this.formData.descripcion = this.user.descripcion
         }
       }).catch((error) => {
         // eslint-disable-next-line no-console
@@ -254,7 +269,7 @@ h2 {
 
 /* Horarios dinámicos */
 .horarios-container {
-  max-height: 330px; /* Límite del scroll */
+  max-height: 270px; /* Límite del scroll */
   overflow-y: auto; /* Scroll vertical */
   padding-right: 10px;
   padding-top: 6px;
