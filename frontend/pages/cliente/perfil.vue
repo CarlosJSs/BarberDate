@@ -16,22 +16,22 @@
             <h2 class="profile-name">
               {{ user.nombre }}
             </h2>
-            <p class="profile-detail">
-              Usuario: {{ user.usuario }}
-            </p>
-            <p class="profile-detail">
-              Correo: {{ user.correo }}
-            </p>
-            <p class="profile-detail">
-              Teléfono: {{ user.telefono }}
-            </p>
-
             <!-- Redes sociales -->
             <div class="social-icons">
               <a href="https://facebook.com" target="_blank" class="social-icon facebook" />
               <a href="https://instagram.com" target="_blank" class="social-icon instagram" />
               <a href="https://x.com" target="_blank" class="social-icon twitter" />
             </div>
+            ㅤ
+            ㅤ
+            <p class="profile-detail">
+              {{ user.usuario }} - {{ user.correo }}
+            </p>
+            ㅤ
+            <p class="profile-detail">
+              {{ user.telefono }}
+            </p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo provident ab, alias quo quibusdam tempore deserunt possimus eos laborum dolor!
           </div>
         </v-card>
       </v-row>
