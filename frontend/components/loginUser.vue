@@ -1,42 +1,42 @@
 <template>
-  <!-- Card principal con estilo oscuro tipo barbería, bordes redondeados y mayor tamaño -->
-  <v-card color="#1E1E1E" width="600" class="elevation-12 rounded-barber">
-    <v-row no-gutters>
-      <!-- Columna izquierda para el espacio del logo, cubre toda la altura del card -->
-      <v-col cols="5" class="logo-column d-flex align-center justify-center">
-        <v-img src="https://cdn.dribbble.com/users/13059329/screenshots/20395671/brucesbarbershop-logo.png" max-width="150" alt="Barbería Logo" contain />
-      </v-col>
+  <div class="login-background">
+    <div class="login-container">
+      <div class="logo-section">
+        <v-img
+          src="https://i.pinimg.com/474x/52/72/e1/5272e1d139193872760ab684002bec21.jpg"
+          max-width="200"
+          contain
+          alt="Barbería Logo"
+        />
+        <h1 class="logo-title">
+          BarberDate
+        </h1>
+      </div>
 
-      <!-- Columna derecha con el formulario de login -->
-      <v-col cols="7">
-        <!-- Título de la tarjeta con ícono de perfil en la parte superior -->
-        <v-card-title class="text-h4 barber-title" style="background-color: #003366; position: relative;">
-          <p class="text-center" style="width: 100%; color: #FFF;">
-            BarberDate
-          </p>
-          <!-- Ícono de perfil en la esquina superior derecha -->
-          <v-icon large color="white" style="position: absolute; top: 8px; right: 16px;">
+      <!-- Sección derecha para el formulario -->
+      <div class="form-section">
+        <div class="form-card">
+          <v-icon large class="profile-icon">
             mdi-account-circle
           </v-icon>
-        </v-card-title>
+          <h2 class="form-title">
+            {{ isSignUp ? 'Sign Up' : 'Login' }}
+          </h2>
 
-        <v-card-text>
-          <v-row>
-            <!-- Campo de texto para el nombre de usuario -->
+          <v-form>
+            <!-- Campo Usuario -->
             <v-text-field
               v-model="usuario"
-              label="User"
+              label="Usuario"
               filled
               rounded
               dense
-              color="blue darken-3"
               :prepend-inner-icon="!usuario ? 'mdi-account' : ''"
               outlined
-              class="centered-label"
+              class="form-input"
             />
-          </v-row>
-          <v-row>
-            <!-- Campo de texto para la contraseña -->
+
+            <!-- Campo Contraseña -->
             <v-text-field
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
@@ -44,86 +44,72 @@
               filled
               rounded
               dense
-              color="red darken-3"
               :prepend-inner-icon="!password ? 'mdi-lock' : ''"
               outlined
-              class="centered-label"
+              class="form-input"
             >
-              <!-- Ícono de ojo para mostrar/ocultar la contraseña -->
               <template #append>
                 <v-icon @click="togglePasswordVisibility">
                   {{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}
                 </v-icon>
               </template>
             </v-text-field>
-          </v-row>
 
-          <!-- Campos adicionales para el registro -->
-          <v-row v-if="isSignUp">
+            <!-- Campos adicionales para Sign Up -->
             <v-text-field
+              v-if="isSignUp"
               v-model="name"
               label="Full Name"
               filled
               rounded
               dense
-              color="green darken-3"
               outlined
+              class="form-input"
             />
-          </v-row>
-          <v-row v-if="isSignUp">
             <v-text-field
+              v-if="isSignUp"
               v-model="email"
               label="Email"
               filled
               rounded
               dense
-              color="green darken-3"
               outlined
+              class="form-input"
             />
-          </v-row>
-          <v-row v-if="isSignUp">
             <v-text-field
+              v-if="isSignUp"
               v-model="phone"
               label="Phone"
               filled
               rounded
               dense
-              color="green darken-3"
               outlined
+              class="form-input"
             />
-          </v-row>
-        </v-card-text>
 
-        <v-card-actions>
-          <v-row align="center" justify="center" class="mb-2 mt-2" style="width: 100%;">
-            <!-- Botón de login o signup -->
-            <v-btn color="blue darken-4" @click="handleSubmit">
-              <span style="text-transform: none; color: white;">
-                {{ isSignUp ? 'Crear cuenta' : 'Iniciar sesión' }}
-              </span>
-              <v-icon color="white" right>
-                {{ isSignUp ? 'mdi-account-plus' : 'mdi-login' }}
-              </v-icon>
+            <!-- Botón Login o Sign Up -->
+            <v-btn block color="black" class="submit-btn" @click="handleSubmit">
+              {{ isSignUp ? 'Sign Up' : 'Next' }}
             </v-btn>
-          </v-row>
 
-          <v-row align="center" justify="center" style="width: 100%;">
-            <p
-              style="font-size: 12px; text-align: center; color: #1976d2; margin: 0; width: auto;"
-            >
-              {{ isSignUp ? 'Ya tienes cuenta?' : '¿Nuevo cliente? Crea tu cuenta' }}
-              <span
-                style="text-decoration: underline; cursor: pointer;"
-                @click="toggleSignUp"
-              >
-                {{ isSignUp ? 'Inicia sesión aquí' : 'Aquí' }}
-              </span>
-            </p>
-          </v-row>
-        </v-card-actions>
-      </v-col>
-    </v-row>
-  </v-card>
+            <!-- Separador y alternancia entre Login y Sign Up -->
+            <div class="divider">
+              or
+            </div>
+            <v-btn block outlined color="black" class="sign-up-btn" @click="toggleSignUp">
+              {{ isSignUp ? 'Login' : 'Sign Up' }}
+            </v-btn>
+          </v-form>
+
+          <p class="terms">
+            By registering, you agree to the
+            <span class="link">Terms, Conditions</span> and
+            <span class="link">Policies</span> of BarberDate.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -132,32 +118,32 @@ import Cookies from 'js-cookie'
 export default {
   data () {
     return {
-      usuario: '', // Nombre de usuario
-      password: '', // Contraseña
-      showPassword: false, // Control para mostrar u ocultar la contraseña
-      isSignUp: false, // Indica si el formulario es de registro o login
-      name: '', // Nombre completo (solo para signup)
-      email: '', // Correo electrónico (solo para signup)
-      phone: '' // Teléfono (solo para signup)
+      usuario: '',
+      password: '',
+      showPassword: false,
+      isSignUp: false,
+      name: '',
+      email: '',
+      phone: ''
     }
   },
   methods: {
-    // Función para manejar el submit (login o signup)
+    togglePasswordVisibility () {
+      this.showPassword = !this.showPassword
+    },
+    toggleSignUp () {
+      this.isSignUp = !this.isSignUp
+    },
     handleSubmit () {
       if (this.isSignUp) {
-        this.signUpBackend() // Si es signup, realiza el registro
+        this.signUpBackend()
       } else {
-        this.loginBackend() // Si no, realiza el login
+        this.loginBackend()
       }
     },
-    // Función para cambiar entre signup y login
-    toggleSignUp () {
-      this.isSignUp = !this.isSignUp // Cambia el estado entre signup y login
-    },
-    // Función para login
     loginBackend () {
       if (!this.usuario || !this.password) {
-        alert('Por favor ingresa usuario y contraseña.') // Verifica que usuario y contraseña estén presentes
+        alert('Por favor ingresa usuario y contraseña.')
         return
       }
 
@@ -166,13 +152,14 @@ export default {
         password: this.password
       }
 
-      // Petición axios para el login
-      this.$axios.post('auth/login', body)
+      this.$axios
+        .post('auth/login', body)
         .then((res) => {
           if (res.data && res.data.token) {
             Cookies.set('token', res.data.token, { expires: 1, path: '/' })
             Cookies.set('role', res.data.role, { expires: 1, path: '/' })
             Cookies.set('userID', res.data.userID, { expires: 1, path: '/' })
+
             const role = res.data.role
             if (role === 'admin') {
               this.$router.push('/admin')
@@ -181,21 +168,19 @@ export default {
             } else if (role === 'cliente') {
               this.$router.push('/cliente')
             } else {
-              // eslint-disable-next-line no-console
               console.error('Rol desconocido: ', role)
             }
           }
         })
         .catch((error) => {
-          // eslint-disable-next-line no-console
           console.error('@@ error => ', error)
-          this.errorMessage = error.response?.data?.error || 'Error al iniciar sesion'
+          this.errorMessage =
+            error.response?.data?.error || 'Error al iniciar sesión'
         })
     },
-    // Función para signup
     signUpBackend () {
       if (!this.name || !this.email || !this.phone || !this.usuario || !this.password) {
-        alert('Por favor completa todos los campos.') // Verifica que todos los campos del registro estén llenos
+        alert('Por favor completa todos los campos.')
         return
       }
 
@@ -207,62 +192,139 @@ export default {
         password: this.password
       }
 
-      // Petición axios para crear cliente
-      this.$axios.post('/cliente/create', body, {
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-          'Content-type': 'application/json'
-        }
-      }).then((res) => {
-        // eslint-disable-next-line no-console
-        console.log('@@ res new Cliente => ', res)
-        if (res && res.data && res.data.message === 'success') {
-          // eslint-disable-next-line no-console
-          console.log('@@ res message => ', res.data.message)
-          alert('Su cuenta se ha creado con exito')
-          this.name = ''
-          this.email = ''
-          this.phone = ''
-          this.usuario = ''
-          this.password = ''
-          this.toggleSignUp()
-        }
-      }).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error('@@ error => ', error)
-      })
-    },
-    // Función para alternar la visibilidad de la contraseña
-    togglePasswordVisibility () {
-      this.showPassword = !this.showPassword
+      this.$axios
+        .post('/cliente/create', body, {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            'Content-type': 'application/json'
+          }
+        })
+        .then((res) => {
+          if (res && res.data && res.data.message === 'success') {
+            alert('Su cuenta se ha creado con éxito')
+            this.name = ''
+            this.email = ''
+            this.phone = ''
+            this.usuario = ''
+            this.password = ''
+            this.toggleSignUp()
+          }
+        })
+        .catch((error) => {
+          console.error('@@ error => ', error)
+        })
     }
   }
 }
 </script>
 
-<style>
-.rounded-barber {
-  border-radius: 20px;
-}
-
-/* Estilo de la columna del logo para cubrir toda la altura */
-.logo-column {
-  background-color: #003366;
-  min-height: 100%;
-}
-
-/* Tipografía para el título */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
-.barber-title {
-  font-family: 'Poppins', sans-serif;
-  font-size: 24px;
-}
-
-/* Centrado del label */
-.centered-label .v-label {
-  display: flex;
+<style scoped>
+/* Fondo */
+.login-background {
+  background-image: url('https://www.peluker.com/blog/wp-content/uploads/2024/03/%C2%BFcuanto-cuesta-una-barberia.jpeg');
+  background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  background-position: center; /* Centra la imagen en el fondo */
+  width: 100vw; /* Asegura que ocupe el ancho completo */
+  height: 100vh; /* Asegura que ocupe el alto completo */
+  display: flex; /* Mantiene el layout de flexbox */
+  align-items: center;
   justify-content: center;
+}
+
+/* Contenedor Principal */
+.login-container {
+  display: flex;
+  max-width: 1000px;
   width: 100%;
-  color: #FFF;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Sección del Logo */
+.logo-section {
+  flex: 1;
+  background-color: #000000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: white;
+}
+.logo-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: white;
+  text-transform: uppercase;
+}
+
+/* Sección del Formulario */
+.form-section {
+  flex: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(214, 214, 214);
+  padding: 30px;
+}
+
+.form-card {
+  max-width: 400px;
+  width: 100%;
+  background-color: #0000002e;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-icon {
+  font-size: 60px;
+  color: #1a1a1a;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.form-input {
+  margin-bottom: 20px;
+}
+
+.submit-btn {
+  background-color: #1a1a1a;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.sign-up-btn {
+  color: #1a1a1a;
+  font-weight: bold;
+}
+
+.divider {
+  margin: 20px 0;
+  font-size: 14px;
+  color: #000000;
+}
+
+.terms {
+  font-size: 12px;
+  color: #888;
+  margin-top: 20px;
+}
+
+.terms .link {
+  text-decoration: underline;
+  cursor: pointer;
+  color: #1a1a1a;
 }
 </style>
