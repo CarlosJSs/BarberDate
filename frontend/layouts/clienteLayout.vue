@@ -69,6 +69,11 @@ export default {
           to: '/cliente/perfil'
         },
         {
+          icon: 'mdi-account-circle',
+          title: 'Contacto',
+          to: '/cliente/contacto'
+        },
+        {
           icon: 'mdi-logout',
           title: 'LogOut',
           to: '/'
