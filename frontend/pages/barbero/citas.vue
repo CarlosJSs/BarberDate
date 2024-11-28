@@ -1,15 +1,5 @@
 <template>
   <div class="container">
-    <div class="sidebar">
-      <h2>Detalles de la Cita:</h2>
-      <div v-for="cita in filteredCitas" :key="cita.date + cita.time" class="cita-detalle">
-        <p><strong>Fecha:</strong>{{ cita.date }}</p>
-        <p><strong>Cliente:</strong>{{ clienteMap[cita.client] || 'Desconocido' }}</p>
-        <p><strong>Estado:</strong>{{ getStatusLabel(cita.status) }}</p>
-        <p><strong>Hora:</strong>{{ cita.time }}</p>
-      </div>
-    </div>
-
     <div class="calendar-container">
       <div class="filter-buttons">
         <h2>Filtros:</h2>
@@ -61,6 +51,16 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <h2>Detalles de la Cita:</h2>
+      <div v-for="cita in filteredCitas" :key="cita.date + cita.time" class="cita-detalle">
+        <p><strong>Fecha:</strong>{{ cita.date }}</p>
+        <p><strong>Cliente:</strong>{{ clienteMap[cita.client] || 'Desconocido' }}</p>
+        <p><strong>Estado:</strong>{{ getStatusLabel(cita.status) }}</p>
+        <p><strong>Hora:</strong>{{ cita.time }}</p>
       </div>
     </div>
   </div>
@@ -229,44 +229,68 @@ export default {
 </script>
 
 <style scoped>
-.container{
+.container {
   display: flex;
+  flex-direction: column;
   width: 90%;
   max-width: 1200px;
   margin: 20px auto;
   gap: 20px;
+  align-items: center;
 }
+
 .sidebar {
-  width: 25%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
   background-color: #333;
   color: #fff;
   padding: 15px;
   border-radius: 8px;
   max-height: 85vh;
+  max-width: 1200px;
+  margin: 0 auto;
   overflow-y: auto;
+  justify-content: space-evenly;
 }
+
 .sidebar h2 {
+  width: 100%;
   margin-bottom: 20px;
   font-size: 1.2em;
+  text-align: center;
 }
-.cita-detalle{
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 10px;
+
+.cita-detalle {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
   background-color: #8b8b8b;
   border: 1px solid #ddd;
   border-radius: 5px;
-  margin-top: 20px;
+  padding: 10px;
+  margin: 10px;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-.calendar-container{
-  width: 75%;
+
+.cita-detalle p {
+  margin: 5px 0;
 }
-.filter-buttons{
+
+.calendar-container {
+  width: 100%;
+  text-align: center;
+}
+
+.filter-buttons {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  justify-content: center;
 }
-.tab-button{
+
+.tab-button {
   padding: 10px;
   font-size: 1em;
   cursor: pointer;
@@ -275,38 +299,68 @@ export default {
   border-radius: 5px;
   font-weight: bold;
   text-transform: uppercase;
-
 }
-.tab-button.all {background-color: #007bff;}
-.tab-button.upcoming{background-color: yellow; color: black}
-.tab-button.completed{background-color: green;}
-.tab-button.not-completed{background-color: red;}
-#calendarHeader{
+
+.tab-button.all {
+  background-color: #007bff;
+}
+
+.tab-button.upcoming {
+  background-color: yellow;
+  color: black;
+}
+
+.tab-button.completed {
+  background-color: green;
+}
+
+.tab-button.not-completed {
+  background-color: red;
+}
+
+#calendarHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
-#calendarDays{
+
+#calendarDays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
 }
-.day, .date{
+
+.day,
+.date {
   text-align: center;
   padding: 10px;
   font-weight: bold;
 }
-.date{
+
+.date {
   border: 1px solid #ddd;
   height: 50px;
   line-height: 30px;
   position: relative;
 }
-.date[data-status="completed"]{background-color: green;}
-.date[data-status="upcoming"]{background-color: rgb(183, 183, 14);}
-.date[data-status="not-completed"]{background-color: red;}
-.date[data-status="multiple"]{background-color: orangered;}
+
+.date[data-status="completed"] {
+  background-color: green;
+}
+
+.date[data-status="upcoming"] {
+  background-color: rgb(183, 183, 14);
+}
+
+.date[data-status="not-completed"] {
+  background-color: red;
+}
+
+.date[data-status="multiple"] {
+  background-color: orangered;
+}
+
 .tooltip {
   position: absolute;
   top: 100px;
