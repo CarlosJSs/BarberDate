@@ -1,24 +1,52 @@
 <template>
-  <div>
-    <h2>Dashboard de Admins - Citas Programadas</h2>
-    <!-- Filtros -->
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-select
-          v-model="filtroBarbero"
-          :items="barberos"
-          label="Seleccionar Barbero"
-          item-text="nombre"
-          item-value="id"
-          clearable
-        />
-      </v-col>
-      <v-col cols="12" md="6">
-        <v-date-picker v-model="filtroFecha" label="Seleccionar Fecha" @input="filtrarCitas" />
-      </v-col>
-    </v-row>
+  <div class="dashboard-container">
+    <h2>Dashboard de Admins - Visualizador de citas</h2> <br>
+    <!-- Selector de Barberos -->
+    <div class="centered-container">
+      <p class="instruction-text">
+        Si desea filtrar las citas por barbero, selecciónelo a continuación:
+      </p>
+      <v-select
+        v-model="filtroBarbero"
+        :items="barberos"
+        label="Seleccionar Barbero"
+        item-text="nombre"
+        item-value="id"
+        clearable
+        outlined
+        class="filter-element"
+      />
+    </div>
+
+    <div class="centered-container">
+      <v-btn color="primary" outlined @click="restaurarFiltros">
+        Restaurar filtros
+      </v-btn>
+    </div>
+
+    <!-- Calendario -->
+    <div class="centered-container">
+      <p class="instruction-text">
+        Por favor, indique la fecha:
+      </p>
+      <v-date-picker
+        v-model="filtroFecha"
+        label="Seleccionar Fecha"
+        class="filter-element date-picker-custom"
+        @input="filtrarCitas"
+      />
+    </div>
+
+    <p class="resultados">
+      <span v-if="!filtroBarbero && !filtroFecha">
+        No se ha seleccionado fecha o barbero. Mostrando todas las citas ({{ citasFiltradas.length }} citas):
+      </span>
+      <span v-else>
+        Se han encontrado {{ citasFiltradas.length }} citas:
+      </span>
+    </p>
     <!-- Lista de Citas Filtradas -->
-    <v-row v-if="citasFiltradas.length">
+    <v-row v-if="citasFiltradas.length" class="citas-container">
       <v-col
         v-for="cita in citasFiltradas"
         :key="cita.id"
@@ -26,18 +54,19 @@
         sm="6"
         md="4"
       >
-        <v-card>
-          <v-card-title>{{ cita.nombre }}</v-card-title>
-          <v-card-subtitle>{{ cita.fecha }}</v-card-subtitle>
+        <v-card class="cita-card">
+          <v-card-title>Nombre de la cita: {{ cita.nombre }}</v-card-title>
           <v-card-text>
-            Hora: {{ cita.hora }}<br>
-            Barbero: {{ barberosMap[cita.barberoID] || 'Barbero desconocido' }}<br>
+            <strong>Agendada para el:</strong> {{ cita.fecha }}<br>
+            <strong>Hora:</strong> {{ cita.hora }}<br>
+            <strong>Barbero: </strong> {{ barberosMap[cita.barberoID] || 'Barbero desconocido' }}<br>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
+
     <!-- Mensaje si no hay citas -->
-    <p v-else>
+    <p v-else class="no-citas-text">
       No hay citas programadas para esta selección.
     </p>
   </div>
@@ -94,6 +123,11 @@ export default {
         return coincideBarbero && coincideFecha
       })
     },
+    restaurarFiltros () {
+      this.filtroBarbero = null
+      this.filtroFecha = null
+      this.citasFiltradas = this.citas
+    },
     loadCitas () {
       this.token = Cookies.get('token')
 
@@ -102,34 +136,29 @@ export default {
           Authorization: `Bearer ${this.token}`
         }
       }).then((res) => {
-        // eslint-disable-next-line no-console
-        console.log('@@@ resCitas => ', res.data)
         if (res.data.message === 'success') {
           this.citas = res.data.cita
           this.citasFiltradas = this.citas
         }
       }).catch((error) => {
         // eslint-disable-next-line no-console
-        console.log('@@@ error => ', error)
+        console.log(error)
       })
     },
     loadBarberos () {
       this.token = Cookies.get('token')
 
-      // Utilizamos Axios para el endpoint
       this.$axios.get('/barber/all', {
         headers: {
           Authorization: `Bearer ${this.token}`
         }
       }).then((res) => {
-        // eslint-disable-next-line no-console
-        console.log('@@@ resBarber => ', res.data)
         if (res.data.message === 'success') {
           this.barberos = res.data.barber
         }
       }).catch((error) => {
         // eslint-disable-next-line no-console
-        console.log('@@@ error => ', error)
+        console.log(error)
       })
     }
   }
@@ -137,9 +166,98 @@ export default {
 </script>
 
 <style scoped>
-h2 {
+.dashboard-container {
+  background: linear-gradient(135deg, #52525285, #2b2c34);
+  font-size: 32px;
+  color: #01b5f6 ;
   text-align: center;
+  padding: 20px;
+  margin-bottom: 50px;
+}
+
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 20px;
 }
 
+.cita-card {
+  background: linear-gradient(135deg, #2b2c34, #004bad85);
+  color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cita-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.date-picker-custom {
+  background: linear-gradient(135deg, #2b2c34, #004bad85);
+  color: #fff;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.date-picker-custom:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Ajuste para los textos internos del date picker */
+.date-picker-custom .v-input__control {
+  color: #fff;
+}
+
+/* Ajuste del borde en los campos seleccionables */
+.date-picker-custom .v-input {
+  border: none;
+}
+
+.date-picker-custom .v-picker__actions button {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.date-picker-custom .v-picker__actions button:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.instruction-text {
+  color: rgb(255, 255, 255);
+  font-size: 16px;
+  font-weight: bold;
+  margin: 30px 0 20px;
+}
+
+.resultados {
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+.filter-element {
+  max-width: 400px;
+  width: 100%;
+}
+
+.citas-container {
+  margin-top: 20px;
+}
+
+.no-citas-text {
+  margin-top: 20px;
+  font-size: 18px;
+  color: gray;
+}
 </style>
