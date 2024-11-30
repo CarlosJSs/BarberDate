@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" @click="handleClickOutside">
     <div class="calendar-container">
       <!-- Encabezado principal -->
       <header class="header-citas">
@@ -51,7 +51,7 @@
         >
           {{ day }}
           <!-- Tooltip al lado -->
-          <div v-if="isTooltipVisible(day)" class="tooltip">
+          <div v-if="isTooltipVisible(day)" class="tooltip" ref="tooltip">
             <div v-for="(cita, index) in tooltipCita" :key="index" class="tooltip-cita">
               <p><strong>Estado:</strong> {{ getStatusLabel(cita.status) }}</p>
               <p><strong>Cliente:</strong> {{ clienteMap[cita.client] || 'Desconocido' }}</p>
@@ -176,6 +176,12 @@ export default {
         this.today.month === this.currentMonth &&
         this.today.year === this.currentYear
       )
+    },
+    handleClickOutside (event) {
+      const tooltip = this.$refs.tooltip?.[0]?.parentElement // Obtener el tooltip activo
+      if (tooltip && !tooltip.contains(event.target)) {
+        this.hideTooltip() // Ocultar el tooltip si el clic fue fuera
+      }
     },
     loadClientes () {
       this.token = Cookies.get('token')
