@@ -7,7 +7,8 @@
           <!-- Avatar flotante -->
           <div class="profile-avatar-wrapper">
             <v-avatar class="profile-avatar">
-              <img src="https://randomuser.me/api/portraits/lego/1.jpg" alt="Avatar Masculino">
+              <!-- Imagen con URL dinámica -->
+              <img :src="randomAvatar" alt="Avatar Masculino">
             </v-avatar>
           </div>
 
@@ -52,7 +53,9 @@ export default {
   data () {
     return {
       user: {},
-      clienteID: Cookies.get('userID')
+      clienteID: Cookies.get('userID'),
+      // Inicializa randomAvatar con una URL aleatoria
+      randomAvatar: this.getRandomAvatar()
     }
   },
   mounted () {
@@ -71,8 +74,6 @@ export default {
           Authorization: `Bearer ${this.token}`
         }
       }).then((res) => {
-        // eslint-disable-next-line no-console
-        console.log('@@@ resCliente => ', res.data)
         if (res.data.message === 'success') {
           this.user = res.data.cliente
         }
@@ -80,6 +81,11 @@ export default {
         // eslint-disable-next-line no-console
         console.log('@@@ error => ', error)
       })
+    },
+    getRandomAvatar () {
+      // Genera un número aleatorio entre 1 y 10
+      const randomNum = Math.floor(Math.random() * 10) + 1
+      return `https://randomuser.me/api/portraits/lego/${randomNum}.jpg` // URL con número aleatorio
     }
   }
 }
@@ -116,14 +122,14 @@ export default {
 /* Avatar flotante */
 .profile-avatar-wrapper {
   position: absolute;
-  top: -10px; /* Ajusta la posición del avatar sobre la tarjeta */
+  top: -50px; /* Ajusta la posición del avatar sobre la tarjeta */
   left: 50%;
   transform: translateX(-50%);
 }
 
 .profile-avatar {
-  width: 120px;
-  height: 120px;
+  width: 150px !important;
+  height: 150px !important;
   border: 5px solid #007bff; /* Borde azul */
   border-radius: 50%;
   overflow: hidden;
@@ -186,6 +192,6 @@ export default {
 }
 
 .social-icon.twitter {
-  background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/83/X_logo_2023.svg');
+  background-image: url('https://img.freepik.com/vector-gratis/nuevo-diseno-icono-x-logotipo-twitter-2023_1017-45418.jpg');
 }
 </style>
