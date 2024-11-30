@@ -2,7 +2,7 @@
   <div class="container">
     <!-- Sección del formulario -->
     <div class="form-section">
-      <h2>Agregar / Modificar Barbero</h2>
+      <h2>Agregar Barbero</h2>
       <div class="form-group">
         <label>Nombre del Barbero</label>
         <input v-model="barbero.nombre" type="text" placeholder="Ingrese el nombre">
@@ -38,9 +38,6 @@
         </thead>
         <tbody>
           <tr v-for="(myBarber, index) in barberos" :key="index">
-            <td v-show="false">
-              {{ myBarber.id }}
-            </td>
             <td>{{ myBarber.nombre }}</td>
             <td>{{ myBarber.correo }}</td>
             <td>{{ myBarber.usuario }}</td>
@@ -86,22 +83,20 @@ export default {
   methods: {
     loadBarberos () {
       this.token = Cookies.get('token')
-
-      // Utilizamos Axios para el endpoint
-      this.$axios.get('/barber/all', {
-        headers: {
-          Authorization: `Bearer ${this.token}`
-        }
-      }).then((res) => {
-        // eslint-disable-next-line no-console
-        console.log('@@@ res => ', res.data)
-        if (res.data.message === 'success') {
-          this.barberos = res.data.barber
-        }
-      }).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.log('@@@ error => ', error)
-      })
+      this.$axios
+        .get('/barber/all', {
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        })
+        .then((res) => {
+          if (res.data.message === 'success') {
+            this.barberos = res.data.barber
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     addBarbero () {
       if (this.barbero.nombre && this.barbero.correo && this.barbero.usuario && this.barbero.contrasena) {
@@ -113,24 +108,21 @@ export default {
           horarios: []
         }
 
-        // Peticion a axios
-        this.$axios.post('/barber/create', body, {
-          headers: {
-            Authorization: `Bearer ${this.token}`,
-            'Content-type': 'application/json'
-          }
-        }).then((res) => {
-          // eslint-disable-next-line no-console
-          console.log('@@ res 1 => ', res)
-          if (res && res.data && res.data.message === 'success') {
-            // eslint-disable-next-line no-console
-            console.log('@@ res message => ', res.data.message)
-            this.loadBarberos()
-          }
-        }).catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error('@@ error => ', error)
-        })
+        this.$axios
+          .post('/barber/create', body, {
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+              'Content-type': 'application/json'
+            }
+          })
+          .then((res) => {
+            if (res.data.message === 'success') {
+              this.loadBarberos()
+            }
+          })
+          .catch((error) => {
+            console.error(error)
+          })
 
         this.clearForm()
       } else {
@@ -138,18 +130,19 @@ export default {
       }
     },
     deleteBarbero (id) {
-      // Peticion con axios
-      this.$axios.delete(`/barber/${id}`, {
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-          'Content-type': 'application/json'
-        }
-      }).then((res) => {
-        this.loadBarberos()
-      }).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error('@@ error => ', error)
-      })
+      this.$axios
+        .delete(`/barber/${id}`, {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            'Content-type': 'application/json'
+          }
+        })
+        .then(() => {
+          this.loadBarberos()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     clearForm () {
       this.barbero = {
@@ -164,30 +157,56 @@ export default {
 </script>
 
 <style scoped>
+/* General */
 .container {
-  display: flex;
-  justify-content: space-between;
+  display: flex; /* Alineación en fila */
+  justify-content: space-between; /* Espaciado entre los contenedores */
+  align-items: flex-start; /* Alinea los elementos al inicio */
   padding: 20px;
   color: #ffffff;
+  gap: 20px; /* Espaciado entre los contenedores */
 }
 
-.form-section, .barbero-section {
-  width: 48%;
-  background-color: #333333;
+/* Secciones */
+.form-section {
+  width: 40%; /* Ajusta según el diseño deseado */
+  min-width: 300px; /* Asegúrate de que no sea demasiado pequeño */
+  background: linear-gradient(145deg, #2b3745, #1c2431);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.barbero-section {
+  width: 55%; /* El espacio restante */
+  min-width: 400px;
+  background: linear-gradient(145deg, #2b3745, #1c2431);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-section:hover, .barbero-section:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Títulos */
 h2 {
   color: #ffffff;
+  font-weight: 600;
+  font-size: 1.5rem;
   margin-bottom: 20px;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.form-group {
-  margin-bottom: 15px;
-}
-
-input[type="text"], input[type="email"], input[type="password"], input[type="file"] {
+/* Formularios */
+input[type="text"], input[type="email"], input[type="password"] {
   width: 100%;
   padding: 10px;
   border: 1px solid #444444;
@@ -196,33 +215,54 @@ input[type="text"], input[type="email"], input[type="password"], input[type="fil
   color: #ffffff;
 }
 
-.add-button, .edit-button, .delete-button {
+input:focus {
+  border-color: #00c6ff;
+  box-shadow: 0 0 8px rgba(0, 198, 255, 0.5);
+}
+
+/* Botones */
+.add-button {
+  background: linear-gradient(90deg, #00c851, #007e33);
+  color: #ffffff;
   padding: 10px 15px;
-  margin-right: 5px;
-  border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 20px;
+  width: 100%;
 }
 
-.add-button {
-  background-color: #28a745;
-  color: #ffffff;
-}
-
-.edit-button {
-  background-color: #ffc107;
-  color: #ffffff;
+.add-button:hover {
+  background: linear-gradient(90deg, #007e33, #00c851);
+  box-shadow: 0 4px 10px rgba(0, 200, 81, 0.5);
 }
 
 .delete-button {
-  background-color: #dc3545;
+  background: linear-gradient(90deg, #ff4444, #cc0000);
   color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
+.delete-button:hover {
+  background: linear-gradient(90deg, #cc0000, #ff4444);
+  box-shadow: 0 4px 10px rgba(255, 68, 68, 0.5);
+}
+
+/* Tabla */
 table {
   width: 100%;
   border-collapse: collapse;
   color: #ffffff;
+  background-color: #2c2f36;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+thead {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
 }
 
 th, td {
@@ -231,14 +271,12 @@ th, td {
   border-bottom: 1px solid #444444;
 }
 
-th {
-  background-color: #555555;
+tbody tr:nth-child(even) {
+  background-color: #2a2d34;
 }
 
-.table-image, .preview-image {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 50%;
+tbody tr:hover {
+  background-color: #3a3d45;
+  transition: background-color 0.3s ease;
 }
 </style>

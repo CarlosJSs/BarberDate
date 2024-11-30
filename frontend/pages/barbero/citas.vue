@@ -1,16 +1,7 @@
 <template>
   <div class="container">
-    <div class="sidebar">
-      <h2>Detalles de la Cita:</h2>
-      <div v-for="cita in filteredCitas" :key="cita.date + cita.time" class="cita-detalle">
-        <p><strong>Fecha:</strong>{{ cita.date }}</p>
-        <p><strong>Cliente:</strong>{{ clienteMap[cita.client] || 'Desconocido' }}</p>
-        <p><strong>Estado:</strong>{{ getStatusLabel(cita.status) }}</p>
-        <p><strong>Hora:</strong>{{ cita.time }}</p>
-      </div>
-    </div>
-
     <div class="calendar-container">
+      <!-- Botones de filtros -->
       <div class="filter-buttons">
         <h2>Filtros:</h2>
         <button class="tab-button all" @click="setFilter('all')">
@@ -25,19 +16,26 @@
         <button class="tab-button not-completed" @click="setFilter('not-completed')">
           Citas No Concretadas
         </button>
+        <button class="tab-button pending" @click="setFilter('pending')">
+          Citas Pendientes
+        </button>
       </div>
 
-      <h2>BarberShop: Calendario de citas</h2>
+      <!-- Cabecera del calendario -->
+      <h2 class="calendar-title">
+        BarberShop: Calendario de citas
+      </h2>
       <div id="calendarHeader">
-        <button @click="changeMonth(-1)">
+        <button class="calendar-nav" @click="changeMonth(-1)">
           ANTERIOR
         </button>
-        <span>{{ currentMonthName }} {{ currentYear }}</span>
-        <button @click="changeMonth(1)">
+        <span class="calendar-title">{{ currentMonthName }} {{ currentYear }}</span>
+        <button class="calendar-nav" @click="changeMonth(1)">
           SIGUIENTE
         </button>
       </div>
 
+      <!-- Días del calendario -->
       <div id="calendarDays">
         <div v-for="day in daysOfWeek" :key="day" class="day">
           {{ day }}
@@ -52,15 +50,27 @@
           @mouseleave="hideAppointmentTooltip"
         >
           {{ day }}
+          <!-- Tooltip al lado -->
           <div v-if="tooltipVisible && tooltipDay === day" class="tooltip">
-            <div v-for="(cita, index) in tooltipCita" :key="index">
-              <strong>Estado:</strong> {{ getStatusLabel(cita.status) }} <br>
-              <strong>Cliente:</strong> {{ clienteMap[cita.client] || 'Desconocido' }} <br>
-              <strong>Hora: </strong> {{ cita.time }}
+            <div v-for="(cita, index) in tooltipCita" :key="index" class="tooltip-cita">
+              <p><strong>Estado:</strong> {{ getStatusLabel(cita.status) }}</p>
+              <p><strong>Cliente:</strong> {{ clienteMap[cita.client] || 'Desconocido' }}</p>
+              <p><strong>Hora:</strong> {{ cita.time }}</p>
               <hr v-if="index < tooltipCita.length - 1">
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Sidebar unificada con tarjetas -->
+    <div class="sidebar">
+      <h2>Detalles de la Cita:</h2>
+      <div v-for="cita in filteredCitas" :key="cita.date + cita.time" class="cita-detalle">
+        <p><strong>Fecha:</strong> {{ cita.date }}</p>
+        <p><strong>Cliente:</strong> {{ clienteMap[cita.client] || 'Desconocido' }}</p>
+        <p><strong>Estado:</strong> {{ getStatusLabel(cita.status) }}</p>
+        <p><strong>Hora:</strong> {{ cita.time }}</p>
       </div>
     </div>
   </div>
@@ -114,6 +124,7 @@ export default {
         if (this.currentFilter === 'upcoming' && cita.status === 'upcoming') { return true }
         if (this.currentFilter === 'completed' && cita.status === 'completed') { return true }
         if (this.currentFilter === 'not-completed' && cita.status === 'not-completed') { return true }
+        if (this.currentFilter === 'pending' && cita.status === 'pending') { return true }
         return false
       })
     }
@@ -207,7 +218,11 @@ export default {
         ? 'Concretada'
         : status === 'upcoming'
           ? 'Próxima'
-          : 'No concretada'
+          : status === 'not-completed'
+            ? 'No concretada'
+            : status === 'pending'
+              ? 'Pendiente de Aceptar/Declinar'
+              : 'Desconocido'
     },
     defStatus (status, fecha, hora) {
       const ahora = dayjs()
@@ -222,6 +237,9 @@ export default {
       if (status === 'denied') {
         return 'not-completed'
       }
+      if (status !== 'aproved' && status !== 'denied' && citaTime.isAfter(ahora)) {
+        return 'pending' // Cita pendiente si no está aprobada ni denegada y es futura
+      }
     }
   }
 }
@@ -229,44 +247,200 @@ export default {
 </script>
 
 <style scoped>
-.container{
+/* Fondo completo */
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url('https://i.pinimg.com/enabled_lo_mid/736x/b8/35/d6/b835d6d1d3af05ea0d7fea6db2688519.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
   display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  background: rgba(152, 152, 152, 0.2);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
   width: 90%;
   max-width: 1200px;
   margin: 20px auto;
   gap: 20px;
+  align-items: center;
 }
+
+/* Calendario */
+.calendar-container {
+  width: 100%;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(0, 106, 255, 0.518), #004bad85);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+#calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-title {
+  font-size: 2em;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 5px 15px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #002550, #003b7a);
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Días del calendario */
+#calendarDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.day,
+.date {
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+}
+
+.date {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  height: 60px;
+  line-height: 30px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s;
+}
+
+.date:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.date[data-status="completed"] {
+  background-color: green;
+}
+
+.date[data-status="upcoming"] {
+  background-color: rgb(183, 183, 14);
+}
+
+.date[data-status="not-completed"] {
+  background-color: red;
+}
+
+.date[data-status="multiple"] {
+  background-color: orangered;
+}
+
 .sidebar {
-  width: 25%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: space-evenly;
+  background: linear-gradient(135deg, rgba(0, 106, 255, 0.518), #004bad85);
+  color: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  max-height: 85vh;
+  max-width: 1200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar h2 {
+  width: 100%;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  text-align: center;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cita-detalle {
+  flex: 1 1 300px;
+  min-width: 300px;
+  max-width: 400px;
+  background: linear-gradient(135deg, #004aad, #007bff);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cita-detalle:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.cita-detalle p {
+  margin: 5px 0;
+  font-size: 1em;
+}
+
+/* Botones vistosos */
+.calendar-nav {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.calendar-nav:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  right: 110%;
+  top: 0;
   background-color: #333;
   color: #fff;
-  padding: 15px;
   border-radius: 8px;
-  max-height: 85vh;
-  overflow-y: auto;
-}
-.sidebar h2 {
-  margin-bottom: 20px;
-  font-size: 1.2em;
-}
-.cita-detalle{
-  max-height: 400px;
-  overflow-y: auto;
   padding: 10px;
-  background-color: #8b8b8b;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  margin-top: 20px;
+  width: 220px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
 }
-.calendar-container{
-  width: 75%;
-}
-.filter-buttons{
+
+/* Botones de filtros */
+.filter-buttons {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  justify-content: center;
 }
-.tab-button{
+
+.tab-button {
   padding: 10px;
   font-size: 1em;
   cursor: pointer;
@@ -275,50 +449,27 @@ export default {
   border-radius: 5px;
   font-weight: bold;
   text-transform: uppercase;
+}
 
+.tab-button.all {
+  background-color: #007bff;
 }
-.tab-button.all {background-color: #007bff;}
-.tab-button.upcoming{background-color: yellow; color: black}
-.tab-button.completed{background-color: green;}
-.tab-button.not-completed{background-color: red;}
-#calendarHeader{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+
+.tab-button.upcoming {
+  background-color: yellow;
+  color: black;
 }
-#calendarDays{
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+
+.tab-button.completed {
+  background-color: green;
 }
-.day, .date{
-  text-align: center;
-  padding: 10px;
-  font-weight: bold;
+
+.tab-button.not-completed {
+  background-color: red;
 }
-.date{
-  border: 1px solid #ddd;
-  height: 50px;
-  line-height: 30px;
-  position: relative;
+
+.tab-button.pending {
+  background-color: gray;
 }
-.date[data-status="completed"]{background-color: green;}
-.date[data-status="upcoming"]{background-color: rgb(183, 183, 14);}
-.date[data-status="not-completed"]{background-color: red;}
-.date[data-status="multiple"]{background-color: orangered;}
-.tooltip {
-  position: absolute;
-  top: 100px;
-  left: 0;
-  background-color: #333;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
-  width: 180px;
-  z-index: 1;
-  font-size: 0.9em;
-  max-height: auto;
-  overflow-y: auto;
-}
+
 </style>
