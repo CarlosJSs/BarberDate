@@ -20,9 +20,9 @@
       </button>
     </div>
 
-    <!-- Sección de la lista de barberos -->
+    <!-- Sección de la lista de administradores -->
     <div class="admin-section">
-      <h2>Adminitradores en el Sistema</h2>
+      <h2>Administradores en el Sistema</h2>
       <table>
         <thead>
           <tr>
@@ -80,22 +80,20 @@ export default {
   methods: {
     loadAdmins () {
       this.token = Cookies.get('token')
-
-      // Utilizamos Axios para el endpoint
-      this.$axios.get('/admin/all', {
-        headers: {
-          Authorization: `Bearer ${this.token}`
-        }
-      }).then((res) => {
-        // eslint-disable-next-line no-console
-        console.log('@@@ res => ', res.data)
-        if (res.data.message === 'success') {
-          this.administradores = res.data.admin
-        }
-      }).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.log('@@@ error => ', error)
-      })
+      this.$axios
+        .get('/admin/all', {
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        })
+        .then((res) => {
+          if (res.data.message === 'success') {
+            this.administradores = res.data.admin
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     addAdmin () {
       if (this.admin.nombre && this.admin.usuario && this.admin.contrasena) {
@@ -105,24 +103,21 @@ export default {
           password: this.admin.contrasena
         }
 
-        // Peticion a axios
-        this.$axios.post('/admin/create', body, {
-          headers: {
-            Authorization: `Bearer ${this.token}`,
-            'Content-type': 'application/json'
-          }
-        }).then((res) => {
-          // eslint-disable-next-line no-console
-          console.log('@@ res 1 => ', res)
-          if (res && res.data && res.data.message === 'success') {
-            // eslint-disable-next-line no-console
-            console.log('@@ res message => ', res.data.message)
-            this.loadAdmins()
-          }
-        }).catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error('@@ error => ', error)
-        })
+        this.$axios
+          .post('/admin/create', body, {
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+              'Content-type': 'application/json'
+            }
+          })
+          .then((res) => {
+            if (res.data.message === 'success') {
+              this.loadAdmins()
+            }
+          })
+          .catch((error) => {
+            console.error(error)
+          })
 
         this.clearForm()
       } else {
@@ -130,18 +125,19 @@ export default {
       }
     },
     deleteAdmin (id) {
-      // Peticion con axios
-      this.$axios.delete(`/admin/${id}`, {
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-          'Content-type': 'application/json'
-        }
-      }).then((res) => {
-        this.loadAdmins()
-      }).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error('@@ error => ', error)
-      })
+      this.$axios
+        .delete(`/admin/${id}`, {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            'Content-type': 'application/json'
+          }
+        })
+        .then(() => {
+          this.loadAdmins()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     clearForm () {
       this.admin = {
@@ -158,27 +154,40 @@ export default {
 .container {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
   padding: 20px;
   color: #ffffff;
 }
 
+/* Secciones */
 .form-section, .admin-section {
   width: 48%;
-  background-color: #333333;
+  background: linear-gradient(145deg, #2b3745, #1c2431);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-section:hover, .admin-section:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
 }
 
 h2 {
   color: #ffffff;
+  font-weight: 600;
+  font-size: 1.5rem;
   margin-bottom: 20px;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.form-group {
-  margin-bottom: 15px;
-}
-
-input[type="text"], input[type="email"], input[type="password"], input[type="file"] {
+/* Formulario */
+input[type="text"], input[type="password"] {
   width: 100%;
   padding: 10px;
   border: 1px solid #444444;
@@ -187,33 +196,53 @@ input[type="text"], input[type="email"], input[type="password"], input[type="fil
   color: #ffffff;
 }
 
-.add-button, .edit-button, .delete-button {
-  padding: 10px 15px;
-  margin-right: 5px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+input:focus {
+  border-color: #00c6ff;
+  box-shadow: 0 0 8px rgba(0, 198, 255, 0.5);
 }
 
 .add-button {
-  background-color: #28a745;
+  background: linear-gradient(90deg, #00c851, #007e33);
   color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 20px;
+  width: 100%;
 }
 
-.edit-button {
-  background-color: #ffc107;
-  color: #ffffff;
+.add-button:hover {
+  background: linear-gradient(90deg, #007e33, #00c851);
+  box-shadow: 0 4px 10px rgba(0, 200, 81, 0.5);
 }
 
 .delete-button {
-  background-color: #dc3545;
+  background: linear-gradient(90deg, #ff4444, #cc0000);
   color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
+.delete-button:hover {
+  background: linear-gradient(90deg, #cc0000, #ff4444);
+  box-shadow: 0 4px 10px rgba(255, 68, 68, 0.5);
+}
+
+/* Tabla */
 table {
   width: 100%;
   border-collapse: collapse;
   color: #ffffff;
+  background-color: #2c2f36;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+thead {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
 }
 
 th, td {
@@ -222,14 +251,12 @@ th, td {
   border-bottom: 1px solid #444444;
 }
 
-th {
-  background-color: #555555;
+tbody tr:nth-child(even) {
+  background-color: #2a2d34;
 }
 
-.table-image, .preview-image {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 50%;
+tbody tr:hover {
+  background-color: #3a3d45;
+  transition: background-color 0.3s ease;
 }
 </style>
