@@ -116,14 +116,14 @@ export default {
 /* Avatar flotante */
 .profile-avatar-wrapper {
   position: absolute;
-  top: -10px; /* Ajusta la posición del avatar sobre la tarjeta */
+  top: -50px; /* Ajusta la posición del avatar sobre la tarjeta */
   left: 50%;
   transform: translateX(-50%);
 }
 
 .profile-avatar {
-  width: 120px;
-  height: 120px;
+  width: 150px !important;
+  height: 150px !important;
   border: 5px solid #007bff; /* Borde azul */
   border-radius: 50%;
   overflow: hidden;
