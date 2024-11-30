@@ -4,24 +4,42 @@
       <!-- Botones de filtros -->
       <div class="filter-buttons">
         <h2>Filtros:</h2>
-        <button class="tab-button all" @click="setFilter('all')">Todas las Citas</button>
-        <button class="tab-button upcoming" @click="setFilter('upcoming')">Próximas Citas</button>
-        <button class="tab-button completed" @click="setFilter('completed')">Citas Completadas</button>
-        <button class="tab-button not-completed" @click="setFilter('not-completed')">Citas No Concretadas</button>
-        <button class="tab-button pending" @click="setFilter('pending')">Citas Pendientes</button>
+        <button class="tab-button all" @click="setFilter('all')">
+          Todas las Citas
+        </button>
+        <button class="tab-button upcoming" @click="setFilter('upcoming')">
+          Próximas Citas
+        </button>
+        <button class="tab-button completed" @click="setFilter('completed')">
+          Citas Completadas
+        </button>
+        <button class="tab-button not-completed" @click="setFilter('not-completed')">
+          Citas No Concretadas
+        </button>
+        <button class="tab-button pending" @click="setFilter('pending')">
+          Citas Pendientes
+        </button>
       </div>
 
       <!-- Cabecera del calendario -->
-      <h2 class="calendar-title">BarberShop: Calendario de citas</h2>
+      <h2 class="calendar-title">
+        BarberShop: Calendario de citas
+      </h2>
       <div id="calendarHeader">
-        <button class="calendar-nav" @click="changeMonth(-1)">ANTERIOR</button>
+        <button class="calendar-nav" @click="changeMonth(-1)">
+          ANTERIOR
+        </button>
         <span class="calendar-title">{{ currentMonthName }} {{ currentYear }}</span>
-        <button class="calendar-nav" @click="changeMonth(1)">SIGUIENTE</button>
+        <button class="calendar-nav" @click="changeMonth(1)">
+          SIGUIENTE
+        </button>
       </div>
 
       <!-- Días del calendario -->
       <div id="calendarDays">
-        <div v-for="day in daysOfWeek" :key="day" class="day">{{ day }}</div>
+        <div v-for="day in daysOfWeek" :key="day" class="day">
+          {{ day }}
+        </div>
         <div v-for="n in firstDay" :key="'empty' + n" class="date" />
         <div
           v-for="day in daysInMonth"
@@ -38,15 +56,15 @@
               <p><strong>Estado:</strong> {{ getStatusLabel(cita.status) }}</p>
               <p><strong>Cliente:</strong> {{ clienteMap[cita.client] || 'Desconocido' }}</p>
               <p><strong>Hora:</strong> {{ cita.time }}</p>
-              <hr v-if="index < tooltipCita.length - 1" />
+              <hr v-if="index < tooltipCita.length - 1">
             </div>
           </div>
         </div>
       </div>
     </div>
 
-   <!-- Sidebar unificada con tarjetas -->
-   <div class="sidebar">
+    <!-- Sidebar unificada con tarjetas -->
+    <div class="sidebar">
       <h2>Detalles de la Cita:</h2>
       <div v-for="cita in filteredCitas" :key="cita.date + cita.time" class="cita-detalle">
         <p><strong>Fecha:</strong> {{ cita.date }}</p>
