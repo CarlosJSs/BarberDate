@@ -186,6 +186,6 @@ export default {
 }
 
 .social-icon.twitter {
-  background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/83/X_logo_2023.svg');
+  background-image: url('https://img.freepik.com/vector-gratis/nuevo-diseno-icono-x-logotipo-twitter-2023_1017-45418.jpg');
 }
 </style>
